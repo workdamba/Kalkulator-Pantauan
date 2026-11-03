@@ -49,7 +49,7 @@
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Username / Email</label>
-                    <input type="text" id="login-email" required placeholder="Contoh: adminlokal" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    <input type="text" id="login-email" required placeholder="Contoh: admin1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Password / Kode PIN</label>
@@ -205,7 +205,12 @@
                             <p class="text-xs text-slate-500">Tersimpan otomatis di Firestore Cloud Database</p>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="window.print()" class="px-3 py-1.5 text-xs bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-lg"><i class="fa-solid fa-print"></i> Cetak PDF</button>
+                            <button onclick="exportToCSV()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-file-excel"></i> Export CSV / Excel
+                            </button>
+                            <button onclick="window.print()" class="px-3 py-1.5 text-xs bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-lg transition flex items-center gap-1">
+                                <i class="fa-solid fa-print"></i> Cetak PDF
+                            </button>
                         </div>
                     </div>
 
@@ -250,15 +255,15 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // CONFIG FIREBASE MILIK ANDA:
+        // CONFIG FIREBASE MILIK ANDA
         const firebaseConfig = {
-  apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V5O4wz_k",
-  authDomain: "kalkulator-komisi.firebaseapp.com",
-  projectId: "kalkulator-komisi",
-  storageBucket: "kalkulator-komisi.firebasestorage.app",
-  messagingSenderId: "92709729622",
-  appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
-};
+            apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V504wz_k",
+            authDomain: "kalkulator-komisi.firebaseapp.com",
+            projectId: "kalkulator-komisi",
+            storageBucket: "kalkulator-komisi.firebasestorage.app",
+            messagingSenderId: "92709729622",
+            appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
+        };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -266,7 +271,6 @@
         const db = getFirestore(app);
 
         let currentUser = null;
-        let cloudTransactions = [];
 
         // Auth Listener
         onAuthStateChanged(auth, (user) => {
@@ -283,14 +287,13 @@
             }
         });
 
-        // Login Handler (Otomatis mendeteksi input username vs email)
+        // Login Handler (Mendukung username 'admin1' maupun email lengkap)
         window.handleLogin = async (e) => {
             e.preventDefault();
             const userInput = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value;
             const errDiv = document.getElementById('login-error');
 
-            // Jika mengandung '@', gunakan langsung. Jika tidak, tambahkan domain dummy.
             let emailFormatted = userInput.includes('@') 
                 ? userInput 
                 : `${userInput.toLowerCase()}@kalkulator.lokal`;
@@ -299,7 +302,7 @@
                 errDiv.classList.add('hidden');
                 await signInWithEmailAndPassword(auth, emailFormatted, pass);
             } catch (err) {
-                console.error("Firebase Auth Error:", err.code, err.message);
+                console.error("Firebase Auth Error:", err);
                 errDiv.innerText = "Login gagal: Username atau Password salah.";
                 errDiv.classList.remove('hidden');
             }
@@ -346,11 +349,12 @@
             try {
                 const q = query(collection(db, "transactions"), orderBy("createdAt", "desc"));
                 onSnapshot(q, (snapshot) => {
-                    cloudTransactions = [];
+                    const dataArr = [];
                     snapshot.forEach((doc) => {
-                        cloudTransactions.push(doc.data());
+                        dataArr.push(doc.data());
                     });
-                    renderHistory(cloudTransactions);
+                    window.cloudTransactions = dataArr;
+                    renderHistory(dataArr);
                 });
             } catch (e) {
                 console.error(e);
@@ -382,6 +386,47 @@
     </script>
 
     <script>
+        // Export CSV / Excel Handler
+        window.exportToCSV = function() {
+            const data = window.cloudTransactions;
+            if (!data || data.length === 0) {
+                alert("Belum ada data transaksi di Cloud untuk diekspor.");
+                return;
+            }
+
+            // UTF-8 BOM agar angka & karakter format terbaca rapi di Microsoft Excel
+            let csvContent = "\uFEFF";
+            csvContent += "Tanggal,Waktu Input,Input By,Gramasi (g),Harga 1 (Gross),Harga 2,Komisi A,Komisi B,Komisi C,Komisi D,Komisi E,Total Ops,Sisa Bersih (F)\n";
+
+            data.forEach(t => {
+                let row = [
+                    `"${t.tanggal || ''}"`,
+                    `"${t.timestamp || ''}"`,
+                    `"${t.userEmail ? t.userEmail.split('@')[0] : 'staf'}"`,
+                    `"${t.gramasi || 0}"`,
+                    `"${Math.round(t.gross || 0)}"`,
+                    `"${Math.round(t.h2 || 0)}"`,
+                    `"${Math.round(t.a || 0)}"`,
+                    `"${Math.round(t.b || 0)}"`,
+                    `"${Math.round(t.c || 0)}"`,
+                    `"${Math.round(t.d || 0)}"`,
+                    `"${Math.round(t.e || 0)}"`,
+                    `"${Math.round(t.ops || 0)}"`,
+                    `"${Math.round(t.f || 0)}"`
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Rekap_Komisi_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
         // Ops Items UI Logic & Calculations
         let opsItems = [
             { id: 1, nama: 'BBM & Transport', nominal: 50000 },
