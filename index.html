@@ -86,7 +86,7 @@
                             Input & Rekapan
                         </button>
                         <button id="btn-tab-dashboard" onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition">
-                            Dashboard Mingguan
+                            Dashboard Analisis
                         </button>
                     </div>
 
@@ -238,17 +238,58 @@
                 </div>
             </div>
 
-            <!-- TAB 2: DASHBOARD MINGGUAN -->
+            <!-- TAB 2: DASHBOARD ANALISIS -->
             <div id="tab-dashboard" class="space-y-6 hidden">
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h2 class="font-bold text-base">Statistik Pendapatan Cloud</h2>
-                            <p class="text-xs text-slate-500">Grafik tren transaksi real-time per tanggal</p>
+                <!-- Filter Rentang Waktu -->
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h2 class="font-bold text-base">Dashboard Analisis Komisi</h2>
+                        <p class="text-xs text-slate-500">Filter data berdasarkan periode waktu penginputan</p>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 p-1 rounded-xl text-xs font-semibold">
+                        <button onclick="setDashboardRange('today')" id="btn-range-today" class="px-3 py-1.5 rounded-lg transition">Hari Ini</button>
+                        <button onclick="setDashboardRange('7days')" id="btn-range-7days" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 shadow-sm transition">7 Hari Terakhir</button>
+                        <button onclick="setDashboardRange('30days')" id="btn-range-30days" class="px-3 py-1.5 rounded-lg transition">30 Hari Terakhir</button>
+                        <button onclick="setDashboardRange('all')" id="btn-range-all" class="px-3 py-1.5 rounded-lg transition">Semua Data</button>
+                    </div>
+                </div>
+
+                <!-- KPI Summary Filtered -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <span class="text-xs text-slate-500 font-semibold uppercase">Total Gross Periode</span>
+                        <div id="dash-gross" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Rp 0</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <span class="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Total Komisi A-E</span>
+                        <div id="dash-komisi-ae" class="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">Rp 0</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <span class="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Total Operasional</span>
+                        <div id="dash-ops" class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
+                    </div>
+                    <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md">
+                        <span class="text-xs text-brand-100 font-semibold uppercase">Total Sisa Bersih (F)</span>
+                        <div id="dash-sisa-f" class="text-xl font-bold mt-1">Rp 0</div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Bar Chart (Tren Harian) -->
+                    <div class="lg:col-span-7 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                        <h3 class="font-bold text-sm">Tren Pendapatan & Komisi</h3>
+                        <div class="h-72 relative w-full">
+                            <canvas id="chart-bar-trend"></canvas>
                         </div>
                     </div>
-                    <div class="h-80 relative w-full">
-                        <canvas id="chart-bar-trend"></canvas>
+
+                    <!-- Doughnut Chart (Breakdown Pihak A-F & Ops) -->
+                    <div class="lg:col-span-5 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                        <h3 class="font-bold text-sm">Distribusi Pembagian Pihak & Ops</h3>
+                        <div class="h-72 relative w-full flex items-center justify-center">
+                            <canvas id="chart-doughnut-breakdown"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -263,13 +304,13 @@
 
         // CONFIG FIREBASE MILIK ANDA
         const firebaseConfig = {
-  apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V5O4wz_k",
-  authDomain: "kalkulator-komisi.firebaseapp.com",
-  projectId: "kalkulator-komisi",
-  storageBucket: "kalkulator-komisi.firebasestorage.app",
-  messagingSenderId: "92709729622",
-  appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
-};
+            apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V504wz_k",
+            authDomain: "kalkulator-komisi.firebaseapp.com",
+            projectId: "kalkulator-komisi",
+            storageBucket: "kalkulator-komisi.firebasestorage.app",
+            messagingSenderId: "92709729622",
+            appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
+        };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -277,7 +318,9 @@
         const db = getFirestore(app);
 
         let currentUser = null;
-        let myChartInstance = null;
+        let barChartInstance = null;
+        let doughnutChartInstance = null;
+        let currentRangeFilter = '7days';
 
         // Auth Listener
         onAuthStateChanged(auth, (user) => {
@@ -375,7 +418,7 @@
                     });
                     window.cloudTransactions = dataArr;
                     renderHistory(dataArr);
-                    renderChart(dataArr);
+                    renderDashboardCharts();
                 });
             } catch (e) {
                 console.error(e);
@@ -410,41 +453,102 @@
             });
         }
 
-        // Render Chart.js
-        window.renderChart = function(data) {
-            if (!data) data = window.cloudTransactions || [];
-            const ctx = document.getElementById('chart-bar-trend');
-            if (!ctx) return;
-
-            // Kelompokkan data per tanggal
-            const sortedData = [...data].reverse();
-            const labels = sortedData.map(d => d.tanggal);
-            const grossData = sortedData.map(d => d.gross);
-            const komisiData = sortedData.map(d => (d.a + d.b + d.c + d.d + d.e));
-            const sisaFData = sortedData.map(d => d.f);
-
-            if (myChartInstance) {
-                myChartInstance.destroy();
-            }
-
-            myChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'Gross (Rp)', data: grossData, backgroundColor: '#3b82f6' },
-                        { label: 'Total Komisi (Rp)', data: komisiData, backgroundColor: '#a855f7' },
-                        { label: 'Sisa Bersih F (Rp)', data: sisaFData, backgroundColor: '#10b981' }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
+        // Dashboard Filter & Charts Logic
+        window.setDashboardRange = function(range) {
+            currentRangeFilter = range;
+            ['today', '7days', '30days', 'all'].forEach(r => {
+                const btn = document.getElementById(`btn-range-${r}`);
+                if (r === range) {
+                    btn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 shadow-sm transition";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg transition text-slate-600 dark:text-slate-300";
                 }
             });
+            renderDashboardCharts();
+        };
+
+        window.renderDashboardCharts = function() {
+            const allData = window.cloudTransactions || [];
+            const now = new Date();
+            
+            // Filter Data berdasarkan tanggal
+            const filteredData = allData.filter(d => {
+                if (!d.tanggal) return false;
+                const itemDate = new Date(d.tanggal);
+                if (currentRangeFilter === 'today') {
+                    const todayStr = now.toISOString().slice(0, 10);
+                    return d.tanggal === todayStr;
+                } else if (currentRangeFilter === '7days') {
+                    const diffDays = (now - itemDate) / (1000 * 3600 * 24);
+                    return diffDays <= 7;
+                } else if (currentRangeFilter === '30days') {
+                    const diffDays = (now - itemDate) / (1000 * 3600 * 24);
+                    return diffDays <= 30;
+                }
+                return true; // 'all'
+            });
+
+            // Hitung Total KPI Filtered
+            let totalGross = 0, totalAE = 0, totalOps = 0, totalF = 0;
+            let sumA = 0, sumB = 0, sumC = 0, sumD = 0, sumE = 0;
+
+            filteredData.forEach(d => {
+                totalGross += d.gross || 0;
+                const ae = (d.a || 0) + (d.b || 0) + (d.c || 0) + (d.d || 0) + (d.e || 0);
+                totalAE += ae;
+                totalOps += d.ops || 0;
+                totalF += d.f || 0;
+
+                sumA += d.a || 0;
+                sumB += d.b || 0;
+                sumC += d.c || 0;
+                sumD += d.d || 0;
+                sumE += d.e || 0;
+            });
+
+            document.getElementById('dash-gross').innerText = 'Rp ' + Math.round(totalGross).toLocaleString('id-ID');
+            document.getElementById('dash-komisi-ae').innerText = 'Rp ' + Math.round(totalAE).toLocaleString('id-ID');
+            document.getElementById('dash-ops').innerText = 'Rp ' + Math.round(totalOps).toLocaleString('id-ID');
+            document.getElementById('dash-sisa-f').innerText = 'Rp ' + Math.round(totalF).toLocaleString('id-ID');
+
+            // Render Bar Chart Tren Harian
+            const sortedData = [...filteredData].reverse();
+            const labels = sortedData.map(d => d.tanggal);
+            const grossSeries = sortedData.map(d => d.gross);
+            const sisaFSeries = sortedData.map(d => d.f);
+
+            const ctxBar = document.getElementById('chart-bar-trend');
+            if (ctxBar) {
+                if (barChartInstance) barChartInstance.destroy();
+                barChartInstance = new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Gross (Rp)', data: grossSeries, backgroundColor: '#3b82f6' },
+                            { label: 'Sisa Bersih F (Rp)', data: sisaFSeries, backgroundColor: '#10b981' }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            // Render Doughnut Chart Pembagian Pihak & Ops
+            const ctxDoughnut = document.getElementById('chart-doughnut-breakdown');
+            if (ctxDoughnut) {
+                if (doughnutChartInstance) doughnutChartInstance.destroy();
+                doughnutChartInstance = new Chart(ctxDoughnut, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Pihak A', 'Pihak B', 'Pihak C', 'Pihak D', 'Pihak E', 'Operasional', 'Pihak F (Sisa)'],
+                        datasets: [{
+                            data: [sumA, sumB, sumC, sumD, sumE, totalOps, totalF],
+                            backgroundColor: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#2563eb']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
         };
     </script>
 
@@ -584,9 +688,8 @@
                 btnDashboard.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition";
                 btnInput.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition";
                 
-                // Render grafik saat tab dashboard dibuka
-                if (window.renderChart) {
-                    window.renderChart();
+                if (window.renderDashboardCharts) {
+                    window.renderDashboardCharts();
                 }
             }
         }
