@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Komisi & Dashboard Mingguan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row md:items-center md:justify-between pb-6 mb-6 border-b border-slate-200 dark:border-slate-800 gap-4 no-print">
+            <div class="flex items-center gap-3">
+                <div class="p-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-500/20">
+                    <i class="fa-solid fa-calculator text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Kalkulator & Dashboard Komisi</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Sistem Kalkulasi Komisi Dual-Price & Rekapan Analisis Mingguan</p>
+                </div>
+            </div>
+
+            <!-- Tab Buttons & Actions -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="bg-slate-200 dark:bg-slate-800 p-1 rounded-xl flex items-center gap-1 text-xs font-semibold">
+                    <button id="btn-tab-input" onclick="switchTab('input')" class="px-3.5 py-2 rounded-lg bg-white dark:bg-slate-700 text-blue-600 dark:text-white shadow-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Input & Rekapan</span>
+                    </button>
+                    <button id="btn-tab-dashboard" onclick="switchTab('dashboard')" class="px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard Mingguan</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="exportCSV()" title="Export CSV" class="flex items-center gap-2 px-3 py-2 rounded-xl border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition text-xs font-semibold">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span class="hidden sm:inline">Export CSV</span>
+                    </button>
+                    <button onclick="window.print()" title="Cetak / PDF" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800 dark:bg-slate-700 text-white hover:bg-slate-700 transition text-xs font-semibold">
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden sm:inline">Cetak</span>
+                    </button>
+                    <button onclick="toggleDarkMode()" title="Ubah Tema" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 transition">
+                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- VIEW 1: TAB INPUT & REKAPAN -->
+        <div id="view-input" class="space-y-8">
+            <!-- Main Input & Live Calculation Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 no-print">
+                
+                <!-- Left Column: Input Parameter & Operasional -->
+                <div class="lg:col-span-5 space-y-6">
+                    
+                    <!-- Parameter Form -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80">
+                        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-slate-100 dark:border-slate-700/60">
+                            <i class="fa-solid fa-sliders text-blue-600 dark:text-blue-400"></i>
+                            <h2 class="font-bold text-base text-slate-900 dark:text-white">1. Input Parameter Harian</h2>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Tanggal -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Tanggal Transaksi</label>
+                                <input type="date" id="input-date" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm font-medium transition">
+                            </div>
+
+                            <!-- Total Gramasi -->
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Gramasi Pendapatan (Gram)</label>
+                                <div class="relative">
+                                    <input type="number" step="0.01" id="input-gram" value="1" placeholder="0.00" oninput="calculateAll()" class="w-full pl-3.5 pr-14 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-base font-bold transition">
+                                    <span class="absolute right-3.5 top-3 text-xs font-semibold text-slate-400">Gram</span>
+                                </div>
+                            </div>
+
+                            <!-- Harga 1 -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Harga 1 (Base Utama / Gross)</label>
+                                    <span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold">A, B, C, D & Gross</span>
+                                </div>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400">Rp</span>
+                                    <input type="number" id="input-harga1" value="2000000" placeholder="0" oninput="calculateAll()" class="w-full pl-10 pr-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm font-semibold transition">
+                                </div>
+                            </div>
+
+                            <!-- Harga 2 -->
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Harga 2 (Khusus Komisi E)</label>
+                                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Pihak E (30%)</span>
+                                </div>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400">Rp</span>
+                                    <input type="number" id="input-harga2" value="2000000" placeholder="0" oninput="calculateAll()" class="w-full pl-10 pr-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm font-semibold transition">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Operasional Harian Itemized -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-100 dark:border-slate-700/60">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-amber-500"></i>
+                                <h2 class="font-bold text-base text-slate-900 dark:text-white">2. Item Operasional Harian</h2>
+                            </div>
+                            <button onclick="addExpenseRow()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 hover:bg-amber-100 transition text-xs font-semibold">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                                <span>Tambah Item</span>
+                            </button>
+                        </div>
+
+                        <div id="expenses-container" class="space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+                            <!-- Dynamic expense inputs -->
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex justify-between items-center text-xs">
+                            <span class="text-slate-500 dark:text-slate-400 font-semibold">Total Pengeluaran:</span>
+                            <span id="summary-total-operational" class="font-bold text-amber-600 dark:text-amber-400 text-sm">Rp 0</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Live Computation Preview -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <!-- Metric Summary Cards -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gross (Harga 1)</span>
+                            <div id="card-total-gross" class="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mt-0.5">Rp 0</div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Komisi A-E</span>
+                            <div id="card-total-komisi-ae" class="text-sm sm:text-base font-extrabold text-purple-600 dark:text-purple-400 mt-0.5">Rp 0</div>
+                        </div>
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Operasional</span>
+                            <div id="card-total-ops" class="text-sm sm:text-base font-extrabold text-amber-600 dark:text-amber-400 mt-0.5">Rp 0</div>
+                        </div>
+                        <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-4 rounded-xl shadow-md text-white">
+                            <span class="text-[10px] font-bold text-blue-100 uppercase tracking-wider">Sisa Bersih (F)</span>
+                            <div id="card-total-f" class="text-sm sm:text-base font-extrabold mt-0.5">Rp 0</div>
+                        </div>
+                    </div>
+
+                    <!-- Live Commission Breakdown Table -->
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 overflow-hidden">
+                        <div class="p-5 pb-3 border-b border-slate-100 dark:border-slate-700/80 flex justify-between items-center">
+                            <div>
+                                <h2 class="font-bold text-base text-slate-900 dark:text-white">Live Preview Pembagian Komisi</h2>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Hasil perhitungan otomatis berdasarkan input saat ini</p>
+                            </div>
+                            <button onclick="saveTransaction()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-md shadow-blue-500/20 transition">
+                                <i class="fa-solid fa-plus-circle"></i>
+                                <span>Simpan Transaksi</span>
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50/70 dark:bg-slate-900/40 text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-700/60">
+                                        <th class="py-2.5 px-5 font-bold">Pihak</th>
+                                        <th class="py-2.5 px-4 font-bold">Skema Persentase</th>
+                                        <th class="py-2.5 px-4 font-bold text-right">Basis Perhitungan</th>
+                                        <th class="py-2.5 px-5 font-bold text-right">Nominal Komisi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50 text-xs font-medium">
+                                    <tr>
+                                        <td class="py-2.5 px-5 font-semibold text-slate-900 dark:text-white">Pihak A</td>
+                                        <td class="py-2.5 px-4 text-slate-500 dark:text-slate-400">10% (Harga 1)</td>
+                                        <td class="py-2.5 px-4 text-right text-slate-400 font-mono" id="basis-a">Rp 0</td>
+                                        <td class="py-2.5 px-5 text-right font-bold text-slate-900 dark:text-white font-mono" id="val-a">Rp 0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2.5 px-5 font-semibold text-slate-900 dark:text-white">Pihak B</td>
+                                        <td class="py-2.5 px-4 text-slate-500 dark:text-slate-400">5% (Harga 1)</td>
+                                        <td class="py-2.5 px-4 text-right text-slate-400 font-mono" id="basis-b">Rp 0</td>
+                                        <td class="py-2.5 px-5 text-right font-bold text-slate-900 dark:text-white font-mono" id="val-b">Rp 0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2.5 px-5 font-semibold text-slate-900 dark:text-white">Pihak C</td>
+                                        <td class="py-2.5 px-4 text-slate-500 dark:text-slate-400">5% (Harga 1)</td>
+                                        <td class="py-2.5 px-4 text-right text-slate-400 font-mono" id="basis-c">Rp 0</td>
+                                        <td class="py-2.5 px-5 text-right font-bold text-slate-900 dark:text-white font-mono" id="val-c">Rp 0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2.5 px-5 font-semibold text-slate-900 dark:text-white">Pihak D</td>
+                                        <td class="py-2.5 px-4 text-slate-500 dark:text-slate-400">10% (Harga 1)</td>
+                                        <td class="py-2.5 px-4 text-right text-slate-400 font-mono" id="basis-d">Rp 0</td>
+                                        <td class="py-2.5 px-5 text-right font-bold text-slate-900 dark:text-white font-mono" id="val-d">Rp 0</td>
+                                    </tr>
+                                    <tr class="bg-emerald-50/40 dark:bg-emerald-950/20">
+                                        <td class="py-2.5 px-5 font-bold text-emerald-800 dark:text-emerald-300">Pihak E</td>
+                                        <td class="py-2.5 px-4 text-emerald-700 dark:text-emerald-400">30% (Harga 2)</td>
+                                        <td class="py-2.5 px-4 text-right text-slate-400 font-mono" id="basis-e">Rp 0</td>
+                                        <td class="py-2.5 px-5 text-right font-bold text-emerald-600 dark:text-emerald-400 font-mono" id="val-e">Rp 0</td>
+                                    </tr>
+                                    <tr class="bg-blue-50/50 dark:bg-blue-950/20">
+                                        <td class="py-3 px-5 font-bold text-blue-900 dark:text-blue-200">Pihak F (Sisa Akhir)</td>
+                                        <td class="py-3 px-4 text-blue-700 dark:text-blue-300">Gross - (A..E + Ops)</td>
+                                        <td class="py-3 px-4 text-right text-slate-400 font-mono">-</td>
+                                        <td class="py-3 px-5 text-right font-extrabold text-blue-600 dark:text-blue-400 font-mono text-sm" id="val-f">Rp 0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECTION: REKAPAN TRANSAKSI HARIAN -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 p-6 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700/80 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-table-list text-blue-600 dark:text-blue-400 text-lg"></i>
+                            <h2 class="font-bold text-lg text-slate-900 dark:text-white">Rekapan Per Transaksi Harian</h2>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Daftar transaksi tersimpan dengan rincian komisi dan pengeluaran operasional</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 no-print">
+                        <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <i class="fa-solid fa-filter text-xs text-slate-400"></i>
+                            <input type="date" id="filter-date" onchange="renderTransactions()" class="bg-transparent text-xs text-slate-700 dark:text-slate-200 focus:outline-none font-medium">
+                            <button onclick="clearFilterDate()" title="Reset Filter Tanggal" class="text-slate-400 hover:text-rose-500">
+                                <i class="fa-solid fa-xmark text-xs"></i>
+                            </button>
+                        </div>
+
+                        <button onclick="clearAllTransactions()" class="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 text-xs font-semibold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>Reset Data</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Total Accumulation Bar -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Gramasi</span>
+                        <span id="acc-gram" class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200">0 Gram</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Gross</span>
+                        <span id="acc-gross" class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200">Rp 0</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Komisi A-D</span>
+                        <span id="acc-ad" class="text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200">Rp 0</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider block">Total Komisi E</span>
+                        <span id="acc-e" class="text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400">Rp 0</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-amber-500 uppercase tracking-wider block">Total Operasional</span>
+                        <span id="acc-ops" class="text-xs sm:text-sm font-extrabold text-amber-600 dark:text-amber-400">Rp 0</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-blue-500 uppercase tracking-wider block">Total Sisa (F)</span>
+                        <span id="acc-f" class="text-xs sm:text-sm font-extrabold text-blue-600 dark:text-blue-400">Rp 0</span>
+                    </div>
+                </div>
+
+                <!-- Transaction Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[900px]">
+                        <thead>
+                            <tr class="bg-slate-100/70 dark:bg-slate-900/80 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                                <th class="py-3 px-4 font-bold">Waktu</th>
+                                <th class="py-3 px-4 font-bold">Gramasi & Harga</th>
+                                <th class="py-3 px-4 font-bold text-right">Total Gross</th>
+                                <th class="py-3 px-4 font-bold">Rincian Komisi (A, B, C, D, E)</th>
+                                <th class="py-3 px-4 font-bold">Rincian Operasional</th>
+                                <th class="py-3 px-4 font-bold text-right">Sisa F</th>
+                                <th class="py-3 px-3 font-bold text-center no-print">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transaction-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/60 text-xs">
+                            <!-- Dynamic Transaction Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <p id="table-empty-msg" class="text-center py-8 text-xs text-slate-400 italic">
+                    Belum ada rekapan transaksi yang disimpan. Silakan isi form dan klik "Simpan Transaksi".
+                </p>
+            </div>
+        </div>
+
+        <!-- VIEW 2: TAB DASHBOARD STATISTIK MINGGUAN -->
+        <div id="view-dashboard" class="space-y-8 hidden">
+            
+            <!-- Filter Dashboard Period -->
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="font-bold text-slate-900 dark:text-white text-base">Analisis & Ringkasan Mingguan</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Visualisasi statistik performa pendapatan dan distribusi komisi</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">Periode:</label>
+                    <select id="dash-period" onchange="updateDashboard()" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-xl px-3 py-2 font-semibold outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="this_week">Minggu Ini (Senin - Minggu)</option>
+                        <option value="last_7_days">7 Hari Terakhir</option>
+                        <option value="this_month">Bulan Ini</option>
+                        <option value="all">Semua Waktu</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- KPI Summary Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Gramasi</span>
+                        <div id="dash-kpi-gram" class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-1">0 Gram</div>
+                    </div>
+                    <div class="p-3 bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 rounded-xl">
+                        <i class="fa-solid fa-weight-scale text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Gross</span>
+                        <div id="dash-kpi-gross" class="text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-1">Rp 0</div>
+                    </div>
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                        <i class="fa-solid fa-coins text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Operasional</span>
+                        <div id="dash-kpi-ops" class="text-lg sm:text-xl font-black text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
+                    </div>
+                    <div class="p-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-xl">
+                        <i class="fa-solid fa-receipt text-xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-5 rounded-2xl text-white shadow-md flex items-center justify-between">
+                    <div>
+                        <span class="text-[11px] font-bold text-blue-100 uppercase tracking-wider">Total Sisa Bersih (F)</span>
+                        <div id="dash-kpi-f" class="text-lg sm:text-xl font-black mt-1">Rp 0</div>
+                    </div>
+                    <div class="p-3 bg-white/10 rounded-xl text-white">
+                        <i class="fa-solid fa-wallet text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Visualizations -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Bar Chart: Harian Gross vs Nett -->
+                <div class="lg:col-span-8 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80">
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white mb-4">Tren Performa Harian (Gross vs Sisa Bersih F vs Ops)</h3>
+                    <div class="h-[300px] w-full relative">
+                        <canvas id="chart-daily-trend"></canvas>
+                    </div>
+                </div>
+
+                <!-- Doughnut Chart: Distribution -->
+                <div class="lg:col-span-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 flex flex-col items-center justify-center">
+                    <h3 class="font-bold text-base text-slate-900 dark:text-white mb-4 self-start">Distribusi Komisi & Pengeluaran</h3>
+                    <div class="h-[250px] w-full relative flex justify-center items-center">
+                        <canvas id="chart-distribution"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accumulation Summary Table -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-700/80 p-6 space-y-4">
+                <h3 class="font-bold text-base text-slate-900 dark:text-white">Rincian Perolehan Komisi Periode Terpilih</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100/70 dark:bg-slate-900/80 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                                <th class="py-3 px-4 font-bold">Pihak Penerima</th>
+                                <th class="py-3 px-4 font-bold">Skema Persentase</th>
+                                <th class="py-3 px-4 font-bold text-right">Total Komisi Terkumpul</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-summary-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/60 text-xs font-medium">
+                            <!-- Dynamic Table Data -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-xs font-semibold no-print">
+        <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600 text-base"></i>
+        <span id="toast-message">Data berhasil disimpan!</span>
+    </div>
+
+    <script>
+        // State Management
+        let expenses = [
+            { id: 1, name: 'BBM & Transport', amount: 50000 },
+            { id: 2, name: 'Konsumsi Lapangan', amount: 30000 }
+        ];
+        let transactions = [];
+        let dailyChartInstance = null;
+        let distributionChartInstance = null;
+
+        window.onload = function() {
+            document.getElementById('input-date').valueAsDate = new Date();
+            
+            // Load saved transactions from localStorage
+            const savedData = localStorage.getItem('komisi_transactions_db');
+            if (savedData) {
+                try {
+                    transactions = JSON.parse(savedData);
+                } catch(e) {}
+            }
+
+            renderExpenses();
+            calculateAll();
+            renderTransactions();
+        }
+
+        function switchTab(tab) {
+            const btnInput = document.getElementById('btn-tab-input');
+            const btnDash = document.getElementById('btn-tab-dashboard');
+            const viewInput = document.getElementById('view-input');
+            const viewDash = document.getElementById('view-dashboard');
+
+            if (tab === 'input') {
+                viewInput.classList.remove('hidden');
+                viewDash.classList.add('hidden');
+                btnInput.className = 'px-3.5 py-2 rounded-lg bg-white dark:bg-slate-700 text-blue-600 dark:text-white shadow-sm transition flex items-center gap-2';
+                btnDash.className = 'px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-2';
+            } else {
+                viewInput.classList.add('hidden');
+                viewDash.classList.remove('hidden');
+                btnDash.className = 'px-3.5 py-2 rounded-lg bg-white dark:bg-slate-700 text-blue-600 dark:text-white shadow-sm transition flex items-center gap-2';
+                btnInput.className = 'px-3.5 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition flex items-center gap-2';
+                updateDashboard();
+            }
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                html.classList.add('dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+            if (!document.getElementById('view-dashboard').classList.contains('hidden')) {
+                updateDashboard();
+            }
+        }
+
+        function renderExpenses() {
+            const container = document.getElementById('expenses-container');
+            container.innerHTML = '';
+
+            if (expenses.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-2">Tidak ada operasional harian.</p>`;
+                return;
+            }
+
+            expenses.forEach((item) => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2 bg-slate-50 dark:bg-slate-900/70 p-2 rounded-xl border border-slate-200/60 dark:border-slate-700/60';
+                row.innerHTML = `
+                    <input type="text" placeholder="Nama Items Pengeluaran" value="${item.name}" oninput="updateExpenseName(${item.id}, this.value)" class="flex-1 bg-transparent border-none text-xs text-slate-800 dark:text-slate-200 focus:outline-none font-medium px-2">
+                    <div class="relative w-28 sm:w-32">
+                        <span class="absolute left-2 top-1.5 text-xs font-semibold text-slate-400">Rp</span>
+                        <input type="number" placeholder="0" value="${item.amount}" oninput="updateExpenseAmount(${item.id}, this.value)" class="w-full pl-7 pr-2 py-1 text-xs font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <button onclick="removeExpenseRow(${item.id})" class="text-slate-400 hover:text-rose-500 p-1 transition">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function addExpenseRow() {
+            expenses.push({ id: Date.now(), name: '', amount: 0 });
+            renderExpenses();
+            calculateAll();
+        }
+
+        function removeExpenseRow(id) {
+            expenses = expenses.filter(i => i.id !== id);
+            renderExpenses();
+            calculateAll();
+        }
+
+        function updateExpenseName(id, val) {
+            const item = expenses.find(i => i.id === id);
+            if (item) item.name = val;
+        }
+
+        function updateExpenseAmount(id, val) {
+            const item = expenses.find(i => i.id === id);
+            if (item) {
+                item.amount = parseFloat(val) || 0;
+                calculateAll();
+            }
+        }
+
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(num);
+        }
+
+        function getCalculations() {
+            const gram = parseFloat(document.getElementById('input-gram').value) || 0;
+            const harga1 = parseFloat(document.getElementById('input-harga1').value) || 0;
+            const harga2 = parseFloat(document.getElementById('input-harga2').value) || 0;
+
+            const gross = gram * harga1;
+            const revenueHarga2 = gram * harga2;
+            const totalOps = expenses.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+
+            const valA = gross * 0.10;
+            const valB = gross * 0.05;
+            const valC = gross * 0.05;
+            const valD = gross * 0.10;
+            const valE = revenueHarga2 * 0.30;
+            const totalAE = valA + valB + valC + valD + valE;
+            const valF = gross - (totalAE + totalOps);
+
+            return { gram, harga1, harga2, gross, revenueHarga2, totalOps, valA, valB, valC, valD, valE, totalAE, valF };
+        }
+
+        function calculateAll() {
+            const calc = getCalculations();
+
+            document.getElementById('card-total-gross').innerText = formatRupiah(calc.gross);
+            document.getElementById('card-total-komisi-ae').innerText = formatRupiah(calc.totalAE);
+            document.getElementById('card-total-ops').innerText = formatRupiah(calc.totalOps);
+            document.getElementById('summary-total-operational').innerText = formatRupiah(calc.totalOps);
+            document.getElementById('card-total-f').innerText = formatRupiah(calc.valF);
+
+            document.getElementById('basis-a').innerText = formatRupiah(calc.gross);
+            document.getElementById('basis-b').innerText = formatRupiah(calc.gross);
+            document.getElementById('basis-c').innerText = formatRupiah(calc.gross);
+            document.getElementById('basis-d').innerText = formatRupiah(calc.gross);
+            document.getElementById('basis-e').innerText = formatRupiah(calc.revenueHarga2);
+
+            document.getElementById('val-a').innerText = formatRupiah(calc.valA);
+            document.getElementById('val-b').innerText = formatRupiah(calc.valB);
+            document.getElementById('val-c').innerText = formatRupiah(calc.valC);
+            document.getElementById('val-d').innerText = formatRupiah(calc.valD);
+            document.getElementById('val-e').innerText = formatRupiah(calc.valE);
+            document.getElementById('val-f').innerText = formatRupiah(calc.valF);
+        }
+
+        function saveTransaction() {
+            const calc = getCalculations();
+            const dateVal = document.getElementById('input-date').value || new Date().toISOString().split('T')[0];
+            const timeVal = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            const record = {
+                id: Date.now(),
+                date: dateVal,
+                time: timeVal,
+                gram: calc.gram,
+                harga1: calc.harga1,
+                harga2: calc.harga2,
+                gross: calc.gross,
+                valA: calc.valA,
+                valB: calc.valB,
+                valC: calc.valC,
+                valD: calc.valD,
+                valE: calc.valE,
+                expensesList: JSON.parse(JSON.stringify(expenses)),
+                totalOps: calc.totalOps,
+                valF: calc.valF
+            };
+
+            transactions.unshift(record);
+            localStorage.setItem('komisi_transactions_db', JSON.stringify(transactions));
+            renderTransactions();
+            showToast('Rekapan transaksi harian berhasil disimpan!');
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('transaction-table-body');
+            const emptyMsg = document.getElementById('table-empty-msg');
+            const filterDate = document.getElementById('filter-date').value;
+
+            let filtered = transactions;
+            if (filterDate) {
+                filtered = transactions.filter(t => t.date === filterDate);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.classList.remove('hidden');
+            } else {
+                emptyMsg.classList.add('hidden');
+                tbody.innerHTML = '';
+
+                filtered.forEach(t => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50/70 dark:hover:bg-slate-700/30 transition border-b border-slate-100 dark:border-slate-700/50';
+                    
+                    let opsHtml = t.expensesList && t.expensesList.length > 0 
+                        ? t.expensesList.map(e => `<div class="flex justify-between gap-2 text-[11px] text-slate-600 dark:text-slate-300"><span>• ${e.name || 'Pengeluaran'}:</span> <span class="font-mono text-amber-600 dark:text-amber-400 font-medium">${formatRupiah(e.amount)}</span></div>`).join('')
+                        : '<span class="text-slate-400 italic text-[11px]">Tidak ada</span>';
+
+                    tr.innerHTML = `
+                        <td class="py-3 px-4 font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">
+                            <div class="font-bold">${t.date}</div>
+                            <div class="text-[10px] text-slate-400">${t.time} WIB</div>
+                        </td>
+                        <td class="py-3 px-4 text-slate-700 dark:text-slate-300">
+                            <div class="font-bold text-slate-900 dark:text-white">${t.gram} Gram</div>
+                            <div class="text-[10px] text-slate-400">H1: ${formatRupiah(t.harga1)} | H2: ${formatRupiah(t.harga2)}</div>
+                        </td>
+                        <td class="py-3 px-4 text-right font-bold font-mono text-slate-900 dark:text-white">
+                            ${formatRupiah(t.gross)}
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px]">
+                                <span class="text-slate-500">A (10%): <strong class="text-slate-800 dark:text-slate-200 font-mono">${formatRupiah(t.valA)}</strong></span>
+                                <span class="text-slate-500">B (5%): <strong class="text-slate-800 dark:text-slate-200 font-mono">${formatRupiah(t.valB)}</strong></span>
+                                <span class="text-slate-500">C (5%): <strong class="text-slate-800 dark:text-slate-200 font-mono">${formatRupiah(t.valC)}</strong></span>
+                                <span class="text-slate-500">D (10%): <strong class="text-slate-800 dark:text-slate-200 font-mono">${formatRupiah(t.valD)}</strong></span>
+                                <span class="col-span-2 text-emerald-600 dark:text-emerald-400 font-medium">E (30% H2): <strong class="font-mono">${formatRupiah(t.valE)}</strong></span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="max-w-[200px] space-y-0.5">
+                                ${opsHtml}
+                                <div class="pt-1 border-t border-slate-100 dark:border-slate-700 font-bold text-[11px] text-amber-600 dark:text-amber-400 flex justify-between">
+                                    <span>Total:</span>
+                                    <span>${formatRupiah(t.totalOps)}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-right font-bold font-mono text-sm text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                            ${formatRupiah(t.valF)}
+                        </td>
+                        <td class="py-3 px-3 text-center no-print">
+                            <button onclick="deleteTransaction(${t.id})" class="text-slate-400 hover:text-rose-500 p-1.5 transition">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            updateAccumulation(filtered);
+        }
+
+        function updateAccumulation(dataList) {
+            const accGram = dataList.reduce((sum, item) => sum + item.gram, 0);
+            const accGross = dataList.reduce((sum, item) => sum + item.gross, 0);
+            const accAD = dataList.reduce((sum, item) => sum + (item.valA + item.valB + item.valC + item.valD), 0);
+            const accE = dataList.reduce((sum, item) => sum + item.valE, 0);
+            const accOps = dataList.reduce((sum, item) => sum + item.totalOps, 0);
+            const accF = dataList.reduce((sum, item) => sum + item.valF, 0);
+
+            document.getElementById('acc-gram').innerText = `${accGram.toFixed(2)} Gram`;
+            document.getElementById('acc-gross').innerText = formatRupiah(accGross);
+            document.getElementById('acc-ad').innerText = formatRupiah(accAD);
+            document.getElementById('acc-e').innerText = formatRupiah(accE);
+            document.getElementById('acc-ops').innerText = formatRupiah(accOps);
+            document.getElementById('acc-f').innerText = formatRupiah(accF);
+        }
+
+        function deleteTransaction(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            localStorage.setItem('komisi_transactions_db', JSON.stringify(transactions));
+            renderTransactions();
+            showToast('Transaksi berhasil dihapus.');
+        }
+
+        function clearAllTransactions() {
+            if (confirm('Apakah Anda yakin ingin menghapus seluruh data rekapan transaksi?')) {
+                transactions = [];
+                localStorage.removeItem('komisi_transactions_db');
+                renderTransactions();
+                showToast('Seluruh data transaksi telah dibersihkan.');
+            }
+        }
+
+        function clearFilterDate() {
+            document.getElementById('filter-date').value = '';
+            renderTransactions();
+        }
+
+        // DASHBOARD COMPUTATION & CHARTS
+        function getFilteredDashboardData() {
+            const period = document.getElementById('dash-period').value;
+            const now = new Date();
+            let filtered = [...transactions];
+
+            if (period === 'this_week') {
+                const day = now.getDay() || 7;
+                const monday = new Date(now);
+                monday.setDate(now.getDate() - day + 1);
+                monday.setHours(0,0,0,0);
+                filtered = transactions.filter(t => new Date(t.date) >= monday);
+            } else if (period === 'last_7_days') {
+                const limit = new Date(now);
+                limit.setDate(now.getDate() - 7);
+                limit.setHours(0,0,0,0);
+                filtered = transactions.filter(t => new Date(t.date) >= limit);
+            } else if (period === 'this_month') {
+                const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+                filtered = transactions.filter(t => new Date(t.date) >= firstDay);
+            }
+
+            return filtered;
+        }
+
+        function updateDashboard() {
+            const data = getFilteredDashboardData();
+
+            // Calculate Metrics
+            const totalGram = data.reduce((s, i) => s + i.gram, 0);
+            const totalGross = data.reduce((s, i) => s + i.gross, 0);
+            const totalOps = data.reduce((s, i) => s + i.totalOps, 0);
+            const totalF = data.reduce((s, i) => s + i.valF, 0);
+
+            const totalA = data.reduce((s, i) => s + i.valA, 0);
+            const totalB = data.reduce((s, i) => s + i.valB, 0);
+            const totalC = data.reduce((s, i) => s + i.valC, 0);
+            const totalD = data.reduce((s, i) => s + i.valD, 0);
+            const totalE = data.reduce((s, i) => s + i.valE, 0);
+
+            // Update KPI
+            document.getElementById('dash-kpi-gram').innerText = `${totalGram.toFixed(2)} Gram`;
+            document.getElementById('dash-kpi-gross').innerText = formatRupiah(totalGross);
+            document.getElementById('dash-kpi-ops').innerText = formatRupiah(totalOps);
+            document.getElementById('dash-kpi-f').innerText = formatRupiah(totalF);
+
+            // Update Summary Table
+            const tbody = document.getElementById('dash-summary-table-body');
+            tbody.innerHTML = `
+                <tr><td class="py-2.5 px-4 font-semibold">Pihak A</td><td class="py-2.5 px-4 text-slate-500">10% (Harga 1)</td><td class="py-2.5 px-4 text-right font-bold font-mono">${formatRupiah(totalA)}</td></tr>
+                <tr><td class="py-2.5 px-4 font-semibold">Pihak B</td><td class="py-2.5 px-4 text-slate-500">5% (Harga 1)</td><td class="py-2.5 px-4 text-right font-bold font-mono">${formatRupiah(totalB)}</td></tr>
+                <tr><td class="py-2.5 px-4 font-semibold">Pihak C</td><td class="py-2.5 px-4 text-slate-500">5% (Harga 1)</td><td class="py-2.5 px-4 text-right font-bold font-mono">${formatRupiah(totalC)}</td></tr>
+                <tr><td class="py-2.5 px-4 font-semibold">Pihak D</td><td class="py-2.5 px-4 text-slate-500">10% (Harga 1)</td><td class="py-2.5 px-4 text-right font-bold font-mono">${formatRupiah(totalD)}</td></tr>
+                <tr class="bg-emerald-50/40 dark:bg-emerald-950/20"><td class="py-2.5 px-4 font-bold text-emerald-800 dark:text-emerald-300">Pihak E</td><td class="py-2.5 px-4 text-emerald-600 dark:text-emerald-400">30% (Harga 2)</td><td class="py-2.5 px-4 text-right font-bold text-emerald-600 dark:text-emerald-400 font-mono">${formatRupiah(totalE)}</td></tr>
+                <tr class="bg-amber-50/40 dark:bg-amber-950/20"><td class="py-2.5 px-4 font-bold text-amber-800 dark:text-amber-300">Operasional Harian</td><td class="py-2.5 px-4 text-amber-600 dark:text-amber-400">Pengeluaran Riil</td><td class="py-2.5 px-4 text-right font-bold text-amber-600 dark:text-amber-400 font-mono">${formatRupiah(totalOps)}</td></tr>
+                <tr class="bg-blue-50/50 dark:bg-blue-950/20"><td class="py-3 px-4 font-bold text-blue-900 dark:text-blue-200">Pihak F (Sisa Bersih)</td><td class="py-3 px-4 text-blue-700 dark:text-blue-300">Nett Balance</td><td class="py-3 px-4 text-right font-extrabold text-blue-600 dark:text-blue-400 font-mono text-sm">${formatRupiah(totalF)}</td></tr>
+            `;
+
+            renderCharts(data, totalA, totalB, totalC, totalD, totalE, totalOps, totalF);
+        }
+
+        function renderCharts(data, valA, valB, valC, valD, valE, totalOps, valF) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+            const gridColor = isDark ? '#334155' : '#f1f5f9';
+
+            // Group data by date for Daily Trend Chart
+            const grouped = {};
+            [...data].reverse().forEach(t => {
+                if (!grouped[t.date]) {
+                    grouped[t.date] = { gross: 0, f: 0, ops: 0 };
+                }
+                grouped[t.date].gross += t.gross;
+                grouped[t.date].f += t.valF;
+                grouped[t.date].ops += t.totalOps;
+            });
+
+            const labels = Object.keys(grouped);
+            const grossData = labels.map(d => grouped[d].gross);
+            const fData = labels.map(d => grouped[d].f);
+            const opsData = labels.map(d => grouped[d].ops);
+
+            // Daily Trend Bar Chart
+            const ctxDaily = document.getElementById('chart-daily-trend').getContext('2d');
+            if (dailyChartInstance) dailyChartInstance.destroy();
+            dailyChartInstance = new Chart(ctxDaily, {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['Belum Ada Data'],
+                    datasets: [
+                        { label: 'Gross (Harga 1)', data: grossData, backgroundColor: '#3b82f6', borderRadius: 6 },
+                        { label: 'Sisa Bersih (F)', data: fData, backgroundColor: '#10b981', borderRadius: 6 },
+                        { label: 'Operasional', data: opsData, backgroundColor: '#f59e0b', borderRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: textColor, font: { family: 'Inter', size: 11 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+                        y: { ticks: { color: textColor }, grid: { color: gridColor } }
+                    }
+                }
+            });
+
+            // Distribution Doughnut Chart
+            const ctxDist = document.getElementById('chart-distribution').getContext('2d');
+            if (distributionChartInstance) distributionChartInstance.destroy();
+            distributionChartInstance = new Chart(ctxDist, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pihak A (10%)', 'Pihak B (5%)', 'Pihak C (5%)', 'Pihak D (10%)', 'Pihak E (30% H2)', 'Operasional', 'Sisa Bersih F'],
+                    datasets: [{
+                        data: [valA, valB, valC, valD, valE, totalOps, valF],
+                        backgroundColor: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: textColor, font: { family: 'Inter', size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function exportCSV() {
+            if (transactions.length === 0) {
+                alert('Tidak ada data transaksi untuk diexport.');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Tanggal,Waktu,Gramasi (g),Harga 1,Harga 2,Gross (Harga 1),Komisi A (10%),Komisi B (5%),Komisi C (5%),Komisi D (10%),Komisi E (30% H2),Total Operasional,Sisa Bersih F\n";
+
+            transactions.forEach(t => {
+                const row = [
+                    t.date,
+                    t.time,
+                    t.gram,
+                    t.harga1,
+                    t.harga2,
+                    t.gross,
+                    t.valA,
+                    t.valB,
+                    t.valC,
+                    t.valD,
+                    t.valE,
+                    t.totalOps,
+                    t.valF
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `rekapan_komisi_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
