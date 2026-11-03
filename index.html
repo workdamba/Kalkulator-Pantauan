@@ -561,10 +561,11 @@
             // Sync to Google Sheets
             if (scriptUrl) {
                 try {
+                    // Gunakan URLSearchParams / Form Data agar lolos CORS Google tanpa terblokir
                     await fetch(scriptUrl, {
                         method: 'POST',
                         mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        headers: { 'Content-Type': 'text/plain' },
                         body: JSON.stringify(tx)
                     });
                     alert('Transaksi berhasil disimpan secara lokal dan dikirim ke Google Sheets!');
