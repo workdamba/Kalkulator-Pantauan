@@ -229,6 +229,7 @@
                                     <th class="py-3 px-2">E</th>
                                     <th class="py-3 px-2">Ops</th>
                                     <th class="py-3 px-2">Sisa F</th>
+                                    <th class="py-3 px-2 text-center no-print">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="history-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/50"></tbody>
@@ -239,9 +240,14 @@
 
             <!-- TAB 2: DASHBOARD MINGGUAN -->
             <div id="tab-dashboard" class="space-y-6 hidden">
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <h2 class="font-bold text-base">Statistik Pendapatan Cloud</h2>
-                    <div class="h-64 relative mt-4">
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="font-bold text-base">Statistik Pendapatan Cloud</h2>
+                            <p class="text-xs text-slate-500">Grafik tren transaksi real-time per tanggal</p>
+                        </div>
+                    </div>
+                    <div class="h-80 relative w-full">
                         <canvas id="chart-bar-trend"></canvas>
                     </div>
                 </div>
@@ -253,17 +259,17 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // CONFIG FIREBASE MILIK ANDA
         const firebaseConfig = {
-            apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V5O4wz_k",
-            authDomain: "kalkulator-komisi.firebaseapp.com",
-            projectId: "kalkulator-komisi",
-            storageBucket: "kalkulator-komisi.firebasestorage.app",
-            messagingSenderId: "92709729622",
-            appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
-        };
+  apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V5O4wz_k",
+  authDomain: "kalkulator-komisi.firebaseapp.com",
+  projectId: "kalkulator-komisi",
+  storageBucket: "kalkulator-komisi.firebasestorage.app",
+  messagingSenderId: "92709729622",
+  appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
+};
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -271,6 +277,7 @@
         const db = getFirestore(app);
 
         let currentUser = null;
+        let myChartInstance = null;
 
         // Auth Listener
         onAuthStateChanged(auth, (user) => {
@@ -287,7 +294,7 @@
             }
         });
 
-        // Login Handler (Mendukung username 'admin1' maupun email lengkap)
+        // Login Handler
         window.handleLogin = async (e) => {
             e.preventDefault();
             const userInput = document.getElementById('login-email').value.trim();
@@ -344,17 +351,31 @@
             }
         };
 
+        // Delete from Firestore Cloud
+        window.deleteTransaction = async (docId) => {
+            if (confirm("Apakah Anda yakin ingin menghapus data transaksi ini dari Cloud?")) {
+                try {
+                    await deleteDoc(doc(db, "transactions", docId));
+                    alert("Data transaksi berhasil dihapus!");
+                } catch (err) {
+                    console.error(err);
+                    alert("Gagal menghapus data dari Cloud.");
+                }
+            }
+        };
+
         // Real-time Cloud Data Listener
         function listenToCloudData() {
             try {
                 const q = query(collection(db, "transactions"), orderBy("createdAt", "desc"));
                 onSnapshot(q, (snapshot) => {
                     const dataArr = [];
-                    snapshot.forEach((doc) => {
-                        dataArr.push(doc.data());
+                    snapshot.forEach((docSnap) => {
+                        dataArr.push({ id: docSnap.id, ...docSnap.data() });
                     });
                     window.cloudTransactions = dataArr;
                     renderHistory(dataArr);
+                    renderChart(dataArr);
                 });
             } catch (e) {
                 console.error(e);
@@ -379,10 +400,52 @@
                     <td class="py-2.5 px-2 text-emerald-600 font-semibold">Rp ${Math.round(t.e).toLocaleString('id-ID')}</td>
                     <td class="py-2.5 px-2 text-amber-600">Rp ${Math.round(t.ops).toLocaleString('id-ID')}</td>
                     <td class="py-2.5 px-2 text-brand-600 font-bold">Rp ${Math.round(t.f).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2 text-center no-print">
+                        <button onclick="deleteTransaction('${t.id}')" class="px-2 py-1 text-xs bg-red-100 hover:bg-red-200 text-red-600 font-bold rounded-lg transition" title="Hapus">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
+
+        // Render Chart.js
+        window.renderChart = function(data) {
+            if (!data) data = window.cloudTransactions || [];
+            const ctx = document.getElementById('chart-bar-trend');
+            if (!ctx) return;
+
+            // Kelompokkan data per tanggal
+            const sortedData = [...data].reverse();
+            const labels = sortedData.map(d => d.tanggal);
+            const grossData = sortedData.map(d => d.gross);
+            const komisiData = sortedData.map(d => (d.a + d.b + d.c + d.d + d.e));
+            const sisaFData = sortedData.map(d => d.f);
+
+            if (myChartInstance) {
+                myChartInstance.destroy();
+            }
+
+            myChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Gross (Rp)', data: grossData, backgroundColor: '#3b82f6' },
+                        { label: 'Total Komisi (Rp)', data: komisiData, backgroundColor: '#a855f7' },
+                        { label: 'Sisa Bersih F (Rp)', data: sisaFData, backgroundColor: '#10b981' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        };
     </script>
 
     <script>
@@ -394,7 +457,6 @@
                 return;
             }
 
-            // UTF-8 BOM agar angka & karakter format terbaca rapi di Microsoft Excel
             let csvContent = "\uFEFF";
             csvContent += "Tanggal,Waktu Input,Input By,Gramasi (g),Harga 1 (Gross),Harga 2,Komisi A,Komisi B,Komisi C,Komisi D,Komisi E,Total Ops,Sisa Bersih (F)\n";
 
@@ -508,12 +570,24 @@
         }
 
         function switchTab(tab) {
+            const btnInput = document.getElementById('btn-tab-input');
+            const btnDashboard = document.getElementById('btn-tab-dashboard');
+
             if(tab === 'input') {
                 document.getElementById('tab-input').classList.remove('hidden');
                 document.getElementById('tab-dashboard').classList.add('hidden');
+                btnInput.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition";
+                btnDashboard.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition";
             } else {
                 document.getElementById('tab-input').classList.add('hidden');
                 document.getElementById('tab-dashboard').classList.remove('hidden');
+                btnDashboard.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition";
+                btnInput.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition";
+                
+                // Render grafik saat tab dashboard dibuka
+                if (window.renderChart) {
+                    window.renderChart();
+                }
             }
         }
     </script>
