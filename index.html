@@ -558,13 +558,13 @@
             localStorage.setItem('komisi_transactions', JSON.stringify(transactions));
             renderHistoryTable();
 
-            // Sync to Google Sheets if Script URL configured
+            // Sync to Google Sheets
             if (scriptUrl) {
                 try {
-                    fetch(scriptUrl, {
+                    await fetch(scriptUrl, {
                         method: 'POST',
                         mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify(tx)
                     });
                     alert('Transaksi berhasil disimpan secara lokal dan dikirim ke Google Sheets!');
