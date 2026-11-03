@@ -29,6 +29,7 @@
             .no-print { display: none !important; }
             .print-only { display: block !important; }
             body { background: white !important; color: black !important; }
+            .card-dashboard { border: 1px solid #cbd5e1 !important; shadow: none !important; }
         }
         .print-only { display: none; }
     </style>
@@ -240,58 +241,176 @@
 
             <!-- TAB 2: DASHBOARD ANALISIS -->
             <div id="tab-dashboard" class="space-y-6 hidden">
-                <!-- Filter Rentang Waktu -->
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div>
-                        <h2 class="font-bold text-base">Dashboard Analisis Komisi</h2>
-                        <p class="text-xs text-slate-500">Filter data berdasarkan periode waktu penginputan</p>
+                
+                <!-- Print Header (Hanya Muncul Saat Cetak Resume PDF) -->
+                <div class="print-only mb-6 border-b-2 border-slate-800 pb-4">
+                    <h1 class="text-2xl font-bold text-slate-900">LAPORAN RESUME ANALISIS KOMISI & OPERASIONAL</h1>
+                    <p id="print-subtitle" class="text-sm text-slate-600 mt-1">Periode Transaksi: Semua Data</p>
+                    <p id="print-date" class="text-xs text-slate-500">Dicetak pada: -</p>
+                </div>
+
+                <!-- Filter Rentang Tanggal Sesuai Kebutuhan -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4 no-print">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 class="font-bold text-base flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-brand-600"></i> Filter Rentang Tanggal
+                            </h2>
+                            <p class="text-xs text-slate-500">Pilih periode awal dan akhir untuk menyaring analisis transaksi</p>
+                        </div>
+                        <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2">
+                            <i class="fa-solid fa-file-pdf text-red-400"></i> Cetak Resume PDF Pimpinan
+                        </button>
                     </div>
-                    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 p-1 rounded-xl text-xs font-semibold">
-                        <button onclick="setDashboardRange('today')" id="btn-range-today" class="px-3 py-1.5 rounded-lg transition">Hari Ini</button>
-                        <button onclick="setDashboardRange('7days')" id="btn-range-7days" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 shadow-sm transition">7 Hari Terakhir</button>
-                        <button onclick="setDashboardRange('30days')" id="btn-range-30days" class="px-3 py-1.5 rounded-lg transition">30 Hari Terakhir</button>
-                        <button onclick="setDashboardRange('all')" id="btn-range-all" class="px-3 py-1.5 rounded-lg transition">Semua Data</button>
+
+                    <div class="flex flex-wrap items-center gap-3 pt-2">
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">Dari:</label>
+                            <input type="date" id="filter-start-date" onchange="applyCustomDateFilter()" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold outline-none">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">s.d.</label>
+                            <input type="date" id="filter-end-date" onchange="applyCustomDateFilter()" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold outline-none">
+                        </div>
+
+                        <div class="h-4 w-px bg-slate-300 dark:bg-slate-700 hidden sm:block"></div>
+
+                        <!-- Shortcut Cepat -->
+                        <div class="flex items-center gap-1 text-xs font-semibold">
+                            <button onclick="setShortcutRange('today')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition">Hari Ini</button>
+                            <button onclick="setShortcutRange('7days')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition">7 Hari Terakhir</button>
+                            <button onclick="setShortcutRange('30days')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition">30 Hari Terakhir</button>
+                            <button onclick="setShortcutRange('all')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition">Semua Data</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- KPI Summary Filtered -->
+                <!-- Ringkasan KPI Card Utama -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
                         <span class="text-xs text-slate-500 font-semibold uppercase">Total Gross Periode</span>
                         <div id="dash-gross" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
                         <span class="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Total Komisi A-E</span>
                         <div id="dash-komisi-ae" class="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
                         <span class="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Total Operasional</span>
                         <div id="dash-ops" class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md">
+                    <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md card-dashboard">
                         <span class="text-xs text-brand-100 font-semibold uppercase">Total Sisa Bersih (F)</span>
                         <div id="dash-sisa-f" class="text-xl font-bold mt-1">Rp 0</div>
                     </div>
                 </div>
 
-                <!-- Charts Row -->
+                <!-- Breakdown Rincian Masing-Masing Pihak A-E & Grafik Donut -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <!-- Bar Chart (Tren Harian) -->
-                    <div class="lg:col-span-7 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                        <h3 class="font-bold text-sm">Tren Pendapatan & Komisi</h3>
-                        <div class="h-72 relative w-full">
-                            <canvas id="chart-bar-trend"></canvas>
+                    <!-- Tabel Rincian Angka Masing-Masing Pihak -->
+                    <div class="lg:col-span-7 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4 card-dashboard">
+                        <h3 class="font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-users text-brand-600"></i> Rincian Nominal Pembagian Per Pihak
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
+                                        <th class="py-2.5">Penerima Komisi / Hak</th>
+                                        <th class="py-2.5">Ket. Skema</th>
+                                        <th class="py-2.5 text-right">Total Akumulasi Nominal</th>
+                                        <th class="py-2.5 text-right">Persentase (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50 font-medium">
+                                    <tr>
+                                        <td class="py-2.5 font-bold flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> Pihak A
+                                        </td>
+                                        <td>10% (H1)</td>
+                                        <td id="dash-val-a" class="text-right font-bold">Rp 0</td>
+                                        <td id="dash-pct-a" class="text-right text-slate-500">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2.5 font-bold flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span> Pihak B
+                                        </td>
+                                        <td>5% (H1)</td>
+                                        <td id="dash-val-b" class="text-right font-bold">Rp 0</td>
+                                        <td id="dash-pct-b" class="text-right text-slate-500">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2.5 font-bold flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-pink-500 inline-block"></span> Pihak C
+                                        </td>
+                                        <td>5% (H1)</td>
+                                        <td id="dash-val-c" class="text-right font-bold">Rp 0</td>
+                                        <td id="dash-pct-c" class="text-right text-slate-500">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2.5 font-bold flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Pihak D
+                                        </td>
+                                        <td>10% (H1)</td>
+                                        <td id="dash-val-d" class="text-right font-bold">Rp 0</td>
+                                        <td id="dash-pct-d" class="text-right text-slate-500">0%</td>
+                                    </tr>
+                                    <tr class="bg-emerald-50/50 dark:bg-emerald-950/20">
+                                        <td class="py-2.5 font-bold text-emerald-600 flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Pihak E
+                                        </td>
+                                        <td class="text-emerald-600">30% (H2)</td>
+                                        <td id="dash-val-e" class="text-right font-bold text-emerald-600">Rp 0</td>
+                                        <td id="dash-pct-e" class="text-right text-emerald-600">0%</td>
+                                    </tr>
+                                    <tr class="bg-amber-50/50 dark:bg-amber-950/20">
+                                        <td class="py-2.5 font-bold text-amber-600 flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Pengeluaran Operasional
+                                        </td>
+                                        <td class="text-amber-600">Real Cost Ops</td>
+                                        <td id="dash-val-ops" class="text-right font-bold text-amber-600">Rp 0</td>
+                                        <td id="dash-pct-ops" class="text-right text-amber-600">0%</td>
+                                    </tr>
+                                    <tr class="bg-brand-50 dark:bg-brand-950/30 font-bold border-t border-brand-200">
+                                        <td class="py-3 text-brand-600 flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span> Pihak F (Sisa Bersih)
+                                        </td>
+                                        <td class="text-brand-600">Gross - (A..E + Ops)</td>
+                                        <td id="dash-val-f" class="text-right text-sm text-brand-600">Rp 0</td>
+                                        <td id="dash-pct-f" class="text-right text-brand-600">0%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <!-- Doughnut Chart (Breakdown Pihak A-F & Ops) -->
-                    <div class="lg:col-span-5 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                        <h3 class="font-bold text-sm">Distribusi Pembagian Pihak & Ops</h3>
-                        <div class="h-72 relative w-full flex items-center justify-center">
+                    <!-- Doughnut Chart Visualisasi Distribusi -->
+                    <div class="lg:col-span-5 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4 card-dashboard flex flex-col justify-between">
+                        <h3 class="font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-brand-600"></i> Visual Distribusi (%)
+                        </h3>
+                        <div class="h-64 relative w-full flex items-center justify-center my-auto">
                             <canvas id="chart-doughnut-breakdown"></canvas>
                         </div>
                     </div>
                 </div>
+
+                <!-- Footer Tanda Tangan Resume (Hanya Tampil Saat Cetak PDF) -->
+                <div class="print-only mt-12 pt-6 border-t border-slate-300">
+                    <div class="grid grid-cols-2 text-center text-xs space-y-2">
+                        <div>
+                            <p class="font-semibold text-slate-600">Dibuat oleh,</p>
+                            <div class="h-16"></div>
+                            <p class="font-bold underline text-slate-900">Admin / Pengelola</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-slate-600">Mengetahui & Menyetujui,</p>
+                            <div class="h-16"></div>
+                            <p class="font-bold underline text-slate-900">Pimpinan / Pemilik</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -303,7 +422,7 @@
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // CONFIG FIREBASE MILIK ANDA
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V5O4wz_k",
   authDomain: "kalkulator-komisi.firebaseapp.com",
   projectId: "kalkulator-komisi",
@@ -318,9 +437,7 @@
         const db = getFirestore(app);
 
         let currentUser = null;
-        let barChartInstance = null;
         let doughnutChartInstance = null;
-        let currentRangeFilter = '7days';
 
         // Auth Listener
         onAuthStateChanged(auth, (user) => {
@@ -453,42 +570,67 @@
             });
         }
 
-        // Dashboard Filter & Charts Logic
-        window.setDashboardRange = function(range) {
-            currentRangeFilter = range;
-            ['today', '7days', '30days', 'all'].forEach(r => {
-                const btn = document.getElementById(`btn-range-${r}`);
-                if (r === range) {
-                    btn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 shadow-sm transition";
-                } else {
-                    btn.className = "px-3 py-1.5 rounded-lg transition text-slate-600 dark:text-slate-300";
-                }
-            });
+        // Custom Date Range Filtering Logic
+        window.applyCustomDateFilter = function() {
+            renderDashboardCharts();
+        };
+
+        window.setShortcutRange = function(range) {
+            const startDateInput = document.getElementById('filter-start-date');
+            const endDateInput = document.getElementById('filter-end-date');
+            const now = new Date();
+            
+            endDateInput.value = now.toISOString().slice(0, 10);
+
+            if (range === 'today') {
+                startDateInput.value = now.toISOString().slice(0, 10);
+            } else if (range === '7days') {
+                const d = new Date();
+                d.setDate(d.getDate() - 7);
+                startDateInput.value = d.toISOString().slice(0, 10);
+            } else if (range === '30days') {
+                const d = new Date();
+                d.setDate(d.getDate() - 30);
+                startDateInput.value = d.toISOString().slice(0, 10);
+            } else if (range === 'all') {
+                startDateInput.value = '';
+                endDateInput.value = '';
+            }
             renderDashboardCharts();
         };
 
         window.renderDashboardCharts = function() {
             const allData = window.cloudTransactions || [];
-            const now = new Date();
+            const startVal = document.getElementById('filter-start-date').value;
+            const endVal = document.getElementById('filter-end-date').value;
             
-            // Filter Data berdasarkan tanggal
+            // Filter Data berdasarkan tanggal kustom
             const filteredData = allData.filter(d => {
                 if (!d.tanggal) return false;
-                const itemDate = new Date(d.tanggal);
-                if (currentRangeFilter === 'today') {
-                    const todayStr = now.toISOString().slice(0, 10);
-                    return d.tanggal === todayStr;
-                } else if (currentRangeFilter === '7days') {
-                    const diffDays = (now - itemDate) / (1000 * 3600 * 24);
-                    return diffDays <= 7;
-                } else if (currentRangeFilter === '30days') {
-                    const diffDays = (now - itemDate) / (1000 * 3600 * 24);
-                    return diffDays <= 30;
-                }
-                return true; // 'all'
+                if (startVal && d.tanggal < startVal) return false;
+                if (endVal && d.tanggal > endVal) return false;
+                return true;
             });
 
-            // Hitung Total KPI Filtered
+            // Update Teks Subtitle Cetak PDF
+            const subtitleEl = document.getElementById('print-subtitle');
+            const dateEl = document.getElementById('print-date');
+            if (subtitleEl) {
+                if (startVal && endVal) {
+                    subtitleEl.innerText = `Periode Transaksi: ${startVal} s.d. ${endVal}`;
+                } else if (startVal) {
+                    subtitleEl.innerText = `Periode Transaksi: Mulai ${startVal}`;
+                } else if (endVal) {
+                    subtitleEl.innerText = `Periode Transaksi: s.d. ${endVal}`;
+                } else {
+                    subtitleEl.innerText = `Periode Transaksi: Semua Data Tersimpan`;
+                }
+            }
+            if (dateEl) {
+                dateEl.innerText = `Dicetak pada: ${new Date().toLocaleString('id-ID')}`;
+            }
+
+            // Hitung Akumulasi Total KPI
             let totalGross = 0, totalAE = 0, totalOps = 0, totalF = 0;
             let sumA = 0, sumB = 0, sumC = 0, sumD = 0, sumE = 0;
 
@@ -506,32 +648,30 @@
                 sumE += d.e || 0;
             });
 
+            // Set Kartu Utama
             document.getElementById('dash-gross').innerText = 'Rp ' + Math.round(totalGross).toLocaleString('id-ID');
             document.getElementById('dash-komisi-ae').innerText = 'Rp ' + Math.round(totalAE).toLocaleString('id-ID');
             document.getElementById('dash-ops').innerText = 'Rp ' + Math.round(totalOps).toLocaleString('id-ID');
             document.getElementById('dash-sisa-f').innerText = 'Rp ' + Math.round(totalF).toLocaleString('id-ID');
 
-            // Render Bar Chart Tren Harian
-            const sortedData = [...filteredData].reverse();
-            const labels = sortedData.map(d => d.tanggal);
-            const grossSeries = sortedData.map(d => d.gross);
-            const sisaFSeries = sortedData.map(d => d.f);
+            // Set Rincian Nominal Masing-Masing Pihak
+            document.getElementById('dash-val-a').innerText = 'Rp ' + Math.round(sumA).toLocaleString('id-ID');
+            document.getElementById('dash-val-b').innerText = 'Rp ' + Math.round(sumB).toLocaleString('id-ID');
+            document.getElementById('dash-val-c').innerText = 'Rp ' + Math.round(sumC).toLocaleString('id-ID');
+            document.getElementById('dash-val-d').innerText = 'Rp ' + Math.round(sumD).toLocaleString('id-ID');
+            document.getElementById('dash-val-e').innerText = 'Rp ' + Math.round(sumE).toLocaleString('id-ID');
+            document.getElementById('dash-val-ops').innerText = 'Rp ' + Math.round(totalOps).toLocaleString('id-ID');
+            document.getElementById('dash-val-f').innerText = 'Rp ' + Math.round(totalF).toLocaleString('id-ID');
 
-            const ctxBar = document.getElementById('chart-bar-trend');
-            if (ctxBar) {
-                if (barChartInstance) barChartInstance.destroy();
-                barChartInstance = new Chart(ctxBar, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            { label: 'Gross (Rp)', data: grossSeries, backgroundColor: '#3b82f6' },
-                            { label: 'Sisa Bersih F (Rp)', data: sisaFSeries, backgroundColor: '#10b981' }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
-            }
+            // Hitung Persentase Terhadap Gross
+            const getPct = (val) => totalGross > 0 ? ((val / totalGross) * 100).toFixed(1) + '%' : '0%';
+            document.getElementById('dash-pct-a').innerText = getPct(sumA);
+            document.getElementById('dash-pct-b').innerText = getPct(sumB);
+            document.getElementById('dash-pct-c').innerText = getPct(sumC);
+            document.getElementById('dash-pct-d').innerText = getPct(sumD);
+            document.getElementById('dash-pct-e').innerText = getPct(sumE);
+            document.getElementById('dash-pct-ops').innerText = getPct(totalOps);
+            document.getElementById('dash-pct-f').innerText = getPct(totalF);
 
             // Render Doughnut Chart Pembagian Pihak & Ops
             const ctxDoughnut = document.getElementById('chart-doughnut-breakdown');
@@ -543,10 +683,16 @@
                         labels: ['Pihak A', 'Pihak B', 'Pihak C', 'Pihak D', 'Pihak E', 'Operasional', 'Pihak F (Sisa)'],
                         datasets: [{
                             data: [sumA, sumB, sumC, sumD, sumE, totalOps, totalF],
-                            backgroundColor: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#2563eb']
+                            backgroundColor: ['#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#2563eb']
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
                 });
             }
         };
