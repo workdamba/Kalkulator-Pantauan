@@ -17,11 +17,7 @@
                 extend: {
                     colors: {
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
+                            50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
                         }
                     }
                 }
@@ -33,415 +29,370 @@
             .no-print { display: none !important; }
             .print-only { display: block !important; }
             body { background: white !important; color: black !important; }
-            .shadow-card { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
         }
         .print-only { display: none; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen">
 
-    <!-- Header Navigation -->
-    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 no-print">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-brand-600 text-white rounded-xl shadow-md">
-                    <i class="fa-solid fa-calculator text-xl"></i>
+    <!-- SCREEN 1: LOGIN SECTION -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-md w-full shadow-xl space-y-6 border border-slate-200 dark:border-slate-700">
+            <div class="text-center space-y-2">
+                <div class="inline-flex p-3 bg-brand-600 text-white rounded-2xl shadow-md mb-2">
+                    <i class="fa-solid fa-lock text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-bold">Login Sistem Komisi</h2>
+                <p class="text-xs text-slate-500">Masukkan Username dan Password Anda</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Username / Email</label>
+                    <input type="text" id="login-email" required placeholder="Contoh: adminlokal" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight">Kalkulator & Dashboard Komisi</h1>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Sistem Kalkulasi Dual-Price & Sync Google Sheets</p>
+                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Password / Kode PIN</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
                 </div>
-            </div>
-
-            <!-- Header Actions -->
-            <div class="flex items-center gap-2">
-                <!-- Navigation Tabs -->
-                <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-xl flex text-xs font-semibold">
-                    <button id="btn-tab-input" onclick="switchTab('input')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition">
-                        <i class="fa-solid fa-edit mr-1"></i> Input & Rekapan
-                    </button>
-                    <button id="btn-tab-dashboard" onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition">
-                        <i class="fa-solid fa-chart-line mr-1"></i> Dashboard Mingguan
-                    </button>
-                </div>
-
-                <button onclick="openConfigModal()" class="p-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-database text-emerald-600"></i>
-                    <span class="hidden sm:inline">Settings DB</span>
-                </button>
-
-                <button onclick="toggleDarkMode()" class="p-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 transition">
-                    <i class="fa-solid fa-moon dark:hidden"></i>
-                    <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-
-        <!-- TAB 1: INPUT & REKAPAN -->
-        <div id="tab-input" class="space-y-6">
-            
-            <!-- Top Summary Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <span class="text-xs text-slate-500 font-semibold uppercase">Gross (Harga 1)</span>
-                    <div id="card-gross" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Rp 0</div>
-                </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <span class="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Total Komisi A-E</span>
-                    <div id="card-komisi-ae" class="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">Rp 0</div>
-                </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <span class="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Total Operasional</span>
-                    <div id="card-ops" class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
-                </div>
-                <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md">
-                    <span class="text-xs text-brand-100 font-semibold uppercase">Sisa Bersih (F)</span>
-                    <div id="card-sisa-f" class="text-xl font-bold mt-1">Rp 0</div>
-                </div>
-            </div>
-
-            <!-- Input Form Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 no-print">
                 
-                <!-- Left Column: Inputs -->
-                <div class="lg:col-span-5 space-y-6">
-                    <!-- Form Param -->
-                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                        <h2 class="font-bold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-sliders text-brand-600"></i> 1. Input Parameter Harian
-                        </h2>
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Tanggal Transaksi</label>
-                            <input type="date" id="input-tanggal" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
-                        </div>
+                <div id="login-error" class="text-xs text-red-500 text-center font-bold hidden"></div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Gramasi Pendapatan (Gram)</label>
-                            <input type="number" step="0.01" id="input-gramasi" value="1" oninput="calculate()" placeholder="Masukkan Gramasi" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Harga 1 (Base/Gross)</label>
-                                <input type="number" id="input-harga1" value="2000000" oninput="calculate()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Harga 2 (Komisi E)</label>
-                                <input type="number" id="input-harga2" value="2000000" oninput="calculate()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Form Itemized Operasional -->
-                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h2 class="font-bold text-base flex items-center gap-2">
-                                <i class="fa-solid fa-list-check text-amber-500"></i> 2. Item Operasional Harian
-                            </h2>
-                            <button onclick="addOpsRow()" class="px-2.5 py-1 text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-bold rounded-lg hover:bg-amber-200 transition">
-                                + Tambah Item
-                            </button>
-                        </div>
-
-                        <div id="ops-container" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                            <!-- Dynamic rows appended via JS -->
-                        </div>
-
-                        <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-sm font-bold">
-                            <span>Total Pengeluaran:</span>
-                            <span id="text-total-ops" class="text-amber-600 dark:text-amber-400">Rp 0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Column: Live Table Preview & Save -->
-                <div class="lg:col-span-7 space-y-6">
-                    <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h2 class="font-bold text-base">Live Preview Pembagian Komisi</h2>
-                                <p class="text-xs text-slate-500">Hasil perhitungan otomatis berdasarkan input</p>
-                            </div>
-                            <button onclick="saveTransaction()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2 transition">
-                                <i class="fa-solid fa-save"></i> Simpan Transaksi
-                            </button>
-                        </div>
-
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs">
-                                <thead>
-                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
-                                        <th class="py-2.5">Pihak</th>
-                                        <th class="py-2.5">Skema</th>
-                                        <th class="py-2.5">Basis</th>
-                                        <th class="py-2.5 text-right">Nominal Komisi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50 font-medium">
-                                    <tr>
-                                        <td class="py-2 font-bold">Pihak A</td>
-                                        <td class="text-slate-500">10% (Harga 1)</td>
-                                        <td id="base-a">Rp 0</td>
-                                        <td id="val-a" class="text-right font-bold text-slate-800 dark:text-slate-200">Rp 0</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-2 font-bold">Pihak B</td>
-                                        <td class="text-slate-500">5% (Harga 1)</td>
-                                        <td id="base-b">Rp 0</td>
-                                        <td id="val-b" class="text-right font-bold text-slate-800 dark:text-slate-200">Rp 0</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-2 font-bold">Pihak C</td>
-                                        <td class="text-slate-500">5% (Harga 1)</td>
-                                        <td id="base-c">Rp 0</td>
-                                        <td id="val-c" class="text-right font-bold text-slate-800 dark:text-slate-200">Rp 0</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-2 font-bold">Pihak D</td>
-                                        <td class="text-slate-500">10% (Harga 1)</td>
-                                        <td id="base-d">Rp 0</td>
-                                        <td id="val-d" class="text-right font-bold text-slate-800 dark:text-slate-200">Rp 0</td>
-                                    </tr>
-                                    <tr class="bg-emerald-50/50 dark:bg-emerald-950/20">
-                                        <td class="py-2 font-bold text-emerald-600 dark:text-emerald-400">Pihak E</td>
-                                        <td class="text-emerald-600 dark:text-emerald-400">30% (Harga 2)</td>
-                                        <td id="base-e" class="text-emerald-600 dark:text-emerald-400">Rp 0</td>
-                                        <td id="val-e" class="text-right font-bold text-emerald-600 dark:text-emerald-400">Rp 0</td>
-                                    </tr>
-                                    <tr class="bg-brand-50/50 dark:bg-brand-950/20 font-bold">
-                                        <td class="py-2.5 text-brand-600 dark:text-brand-400">Pihak F (Sisa/Net)</td>
-                                        <td class="text-brand-600 dark:text-brand-400">Gross - (A..E + Ops)</td>
-                                        <td class="text-slate-400">-</td>
-                                        <td id="val-f" class="text-right text-sm text-brand-600 dark:text-brand-400">Rp 0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Table Transaction Log & Filter -->
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 no-print">
-                    <div>
-                        <h2 class="font-bold text-base">Rekapan Riwayat Transaksi</h2>
-                        <p class="text-xs text-slate-500">Data tersimpan di perangkat lokal & auto sync ke Google Sheets</p>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <input type="date" id="filter-date" onchange="renderHistoryTable()" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs focus:ring-2 focus:ring-brand-500 outline-none">
-                        <button onclick="resetFilter()" class="px-2.5 py-1.5 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 rounded-lg font-semibold">Reset</button>
-                        <button onclick="exportCSV()" class="px-3 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-sm flex items-center gap-1">
-                            <i class="fa-solid fa-file-csv"></i> CSV
-                        </button>
-                        <button onclick="window.print()" class="px-3 py-1.5 text-xs bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-lg shadow-sm flex items-center gap-1">
-                            <i class="fa-solid fa-print"></i> Cetak PDF
-                        </button>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
-                                <th class="py-3 px-2">Waktu</th>
-                                <th class="py-3 px-2">Gramasi</th>
-                                <th class="py-3 px-2">H1 / H2</th>
-                                <th class="py-3 px-2">Gross</th>
-                                <th class="py-3 px-2">A (10%)</th>
-                                <th class="py-3 px-2">B (5%)</th>
-                                <th class="py-3 px-2">C (5%)</th>
-                                <th class="py-3 px-2">D (10%)</th>
-                                <th class="py-3 px-2">E (30% H2)</th>
-                                <th class="py-3 px-2">Operasional</th>
-                                <th class="py-3 px-2">Sisa F (Nett)</th>
-                                <th class="py-3 px-2 text-center no-print">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/50">
-                            <!-- Rows rendered via JS -->
-                        </tbody>
-                        <tfoot id="history-tfoot" class="font-bold bg-slate-50 dark:bg-slate-900/50">
-                            <!-- Footer total rendered via JS -->
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- TAB 2: DASHBOARD MINGGUAN -->
-        <div id="tab-dashboard" class="space-y-6 hidden">
-            
-            <!-- Dashboard Controls -->
-            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                <div>
-                    <h2 class="font-bold text-base">Analisis & Statistik Mingguan</h2>
-                    <p class="text-xs text-slate-500">Ringkasan performa dan akumulasi pendapatan</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <select id="dash-period" onchange="renderDashboard()" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold focus:ring-2 focus:ring-brand-500 outline-none">
-                        <option value="this-week">Minggu Ini</option>
-                        <option value="last-7">7 Hari Terakhir</option>
-                        <option value="this-month">Bulan Ini</option>
-                        <option value="all">Semua Waktu</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- KPI Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <span class="text-xs text-slate-500 font-semibold uppercase">Total Gramasi</span>
-                    <div id="dash-kpi-gram" class="text-xl font-bold text-slate-900 dark:text-white mt-1">0 Gram</div>
-                </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <span class="text-xs text-slate-500 font-semibold uppercase">Total Gross</span>
-                    <div id="dash-kpi-gross" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Rp 0</div>
-                </div>
-                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <span class="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Total Operasional</span>
-                    <div id="dash-kpi-ops" class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
-                </div>
-                <div class="bg-emerald-600 text-white p-4 rounded-2xl shadow-md">
-                    <span class="text-xs text-emerald-100 font-semibold uppercase">Total Sisa Bersih (F)</span>
-                    <div id="dash-kpi-f" class="text-xl font-bold mt-1">Rp 0</div>
-                </div>
-            </div>
-
-            <!-- Charts Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Bar Chart -->
-                <div class="lg:col-span-8 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
-                    <h3 class="font-bold text-sm">Tren Pendapatan & Sisa Bersih Harian</h3>
-                    <div class="h-64 relative">
-                        <canvas id="chart-bar-trend"></canvas>
-                    </div>
-                </div>
-                <!-- Pie Chart -->
-                <div class="lg:col-span-4 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
-                    <h3 class="font-bold text-sm">Proporsi Distribusi Komisi</h3>
-                    <div class="h-64 relative flex items-center justify-center">
-                        <canvas id="chart-pie-dist"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Summary Table Hak Komisi -->
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3">
-                <h3 class="font-bold text-sm">Akumulasi Total Hak Penerimaan Komisi Per Pihak</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
-                                <th class="py-2.5">Pihak Penerima</th>
-                                <th class="py-2.5">Skema Komisi</th>
-                                <th class="py-2.5 text-right">Akumulasi Nominal</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dash-hak-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/50 font-medium">
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-
-    </main>
-
-    <!-- Modal Settings Google Apps Script -->
-    <div id="config-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
-            <div class="flex items-center justify-between">
-                <h3 class="font-bold text-base flex items-center gap-2">
-                    <i class="fa-solid fa-database text-emerald-600"></i> Pengaturan Database Sheets
-                </h3>
-                <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times"></i></button>
-            </div>
-            <p class="text-xs text-slate-500">Masukkan URL Web App Google Apps Script Anda untuk sinkronisasi otomatis transaksi ke Google Sheets Admin.</p>
-            
-            <div>
-                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">URL Google Apps Script</label>
-                <input type="text" id="input-script-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-brand-500 outline-none">
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeConfigModal()" class="px-3 py-1.5 text-xs bg-slate-100 dark:bg-slate-700 rounded-xl font-bold">Batal</button>
-                <button onclick="saveScriptUrl()" class="px-4 py-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm">Simpan URL</button>
-            </div>
+                <button type="submit" id="btn-login" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- JavaScript Application Code -->
+    <!-- SCREEN 2: MAIN APP SECTION -->
+    <div id="app-screen" class="hidden">
+        <!-- Header -->
+        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 no-print">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-brand-600 text-white rounded-xl shadow-md">
+                        <i class="fa-solid fa-calculator text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight">Kalkulator & Dashboard Komisi</h1>
+                        <p id="user-display" class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Terhubung ke Cloud Database</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-xl flex text-xs font-semibold">
+                        <button id="btn-tab-input" onclick="switchTab('input')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition">
+                            Input & Rekapan
+                        </button>
+                        <button id="btn-tab-dashboard" onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition">
+                            Dashboard Mingguan
+                        </button>
+                    </div>
+
+                    <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- TAB 1: INPUT & REKAPAN -->
+            <div id="tab-input" class="space-y-6">
+                <!-- Top Summary Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <span class="text-xs text-slate-500 font-semibold uppercase">Gross (Harga 1)</span>
+                        <div id="card-gross" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Rp 0</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <span class="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Total Komisi A-E</span>
+                        <div id="card-komisi-ae" class="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">Rp 0</div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <span class="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Total Operasional</span>
+                        <div id="card-ops" class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
+                    </div>
+                    <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md">
+                        <span class="text-xs text-brand-100 font-semibold uppercase">Sisa Bersih (F)</span>
+                        <div id="card-sisa-f" class="text-xl font-bold mt-1">Rp 0</div>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 no-print">
+                    <div class="lg:col-span-5 space-y-6">
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                            <h2 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-sliders text-brand-600"></i> 1. Input Parameter Harian</h2>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Tanggal Transaksi</label>
+                                <input type="date" id="input-tanggal" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Gramasi Pendapatan (Gram)</label>
+                                <input type="number" step="0.01" id="input-gramasi" value="1" oninput="calculate()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Harga 1 (Gross)</label>
+                                    <input type="number" id="input-harga1" value="2000000" oninput="calculate()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Harga 2 (Komisi E)</label>
+                                    <input type="number" id="input-harga2" value="2000000" oninput="calculate()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Itemized Ops -->
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h2 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-list-check text-amber-500"></i> 2. Item Operasional Harian</h2>
+                                <button onclick="addOpsRow()" class="px-2.5 py-1 text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-bold rounded-lg">+ Tambah Item</button>
+                            </div>
+                            <div id="ops-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+                            <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-sm font-bold">
+                                <span>Total Pengeluaran:</span>
+                                <span id="text-total-ops" class="text-amber-600">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Breakdown Preview & Save -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="font-bold text-base">Live Preview Pembagian Komisi</h2>
+                                    <p class="text-xs text-slate-500">Perhitungan otomatis berbasis parameter</p>
+                                </div>
+                                <button onclick="saveTransactionToFirebase()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Simpan Ke Cloud
+                                </button>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
+                                            <th class="py-2.5">Pihak</th>
+                                            <th class="py-2.5">Skema</th>
+                                            <th class="py-2.5">Basis</th>
+                                            <th class="py-2.5 text-right">Nominal Komisi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50 font-medium">
+                                        <tr><td class="py-2 font-bold">Pihak A</td><td>10% (H1)</td><td id="base-a">Rp 0</td><td id="val-a" class="text-right font-bold">Rp 0</td></tr>
+                                        <tr><td class="py-2 font-bold">Pihak B</td><td>5% (H1)</td><td id="base-b">Rp 0</td><td id="val-b" class="text-right font-bold">Rp 0</td></tr>
+                                        <tr><td class="py-2 font-bold">Pihak C</td><td>5% (H1)</td><td id="base-c">Rp 0</td><td id="val-c" class="text-right font-bold">Rp 0</td></tr>
+                                        <tr><td class="py-2 font-bold">Pihak D</td><td>10% (H1)</td><td id="base-d">Rp 0</td><td id="val-d" class="text-right font-bold">Rp 0</td></tr>
+                                        <tr class="bg-emerald-50/50 dark:bg-emerald-950/20"><td class="py-2 font-bold text-emerald-600">Pihak E</td><td class="text-emerald-600">30% (H2)</td><td id="base-e" class="text-emerald-600">Rp 0</td><td id="val-e" class="text-right font-bold text-emerald-600">Rp 0</td></tr>
+                                        <tr class="bg-brand-50/50 dark:bg-brand-950/20 font-bold"><td class="py-2.5 text-brand-600">Pihak F (Net)</td><td class="text-brand-600">Gross - (A..E + Ops)</td><td>-</td><td id="val-f" class="text-right text-sm text-brand-600">Rp 0</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Log Table -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 no-print">
+                        <div>
+                            <h2 class="font-bold text-base">Rekapan Cloud Real-time</h2>
+                            <p class="text-xs text-slate-500">Tersimpan otomatis di Firestore Cloud Database</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.print()" class="px-3 py-1.5 text-xs bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-lg"><i class="fa-solid fa-print"></i> Cetak PDF</button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
+                                    <th class="py-3 px-2">Waktu</th>
+                                    <th class="py-3 px-2">Input By</th>
+                                    <th class="py-3 px-2">Gramasi</th>
+                                    <th class="py-3 px-2">Gross</th>
+                                    <th class="py-3 px-2">A</th>
+                                    <th class="py-3 px-2">B</th>
+                                    <th class="py-3 px-2">C</th>
+                                    <th class="py-3 px-2">D</th>
+                                    <th class="py-3 px-2">E</th>
+                                    <th class="py-3 px-2">Ops</th>
+                                    <th class="py-3 px-2">Sisa F</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: DASHBOARD MINGGUAN -->
+            <div id="tab-dashboard" class="space-y-6 hidden">
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <h2 class="font-bold text-base">Statistik Pendapatan Cloud</h2>
+                    <div class="h-64 relative mt-4">
+                        <canvas id="chart-bar-trend"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK Modular -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // CONFIG FIREBASE MILIK ANDA:
+        const firebaseConfig = {
+            apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V504wz_k",
+            authDomain: "kalkulator-komisi.firebaseapp.com",
+            projectId: "kalkulator-komisi",
+            storageBucket: "kalkulator-komisi.firebasestorage.app",
+            messagingSenderId: "92709729622",
+            appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let cloudTransactions = [];
+
+        // Auth Listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                document.getElementById('user-display').innerText = `User: ${user.email.split('@')[0]}`;
+                listenToCloudData();
+            } else {
+                currentUser = null;
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+            }
+        });
+
+        // Login Handler (Mendukung input username biasa)
+        window.handleLogin = async (e) => {
+            e.preventDefault();
+            const userInput = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value;
+            const errDiv = document.getElementById('login-error');
+
+            let emailFormatted = userInput;
+            if (!userInput.includes('@')) {
+                emailFormatted = `${userInput.toLowerCase()}@kalkulator.local`;
+            }
+
+            try {
+                errDiv.classList.add('hidden');
+                await signInWithEmailAndPassword(auth, emailFormatted, pass);
+            } catch (err) {
+                console.error(err);
+                errDiv.innerText = "Login gagal: Username atau Password salah.";
+                errDiv.classList.remove('hidden');
+            }
+        };
+
+        // Logout Handler
+        window.handleLogout = () => {
+            signOut(auth);
+        };
+
+        // Save to Firestore Cloud
+        window.saveTransactionToFirebase = async () => {
+            const calc = calculate();
+            const tanggal = document.getElementById('input-tanggal').value;
+
+            if (!tanggal) {
+                alert('Pilih tanggal terlebih dahulu.');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "transactions"), {
+                    tanggal: tanggal,
+                    timestamp: new Date().toLocaleString('id-ID'),
+                    userEmail: currentUser.email,
+                    gramasi: calc.gramasi,
+                    h1: calc.h1,
+                    h2: calc.h2,
+                    gross: calc.gross,
+                    a: calc.a, b: calc.b, c: calc.c, d: calc.d, e: calc.e,
+                    ops: calc.totalOps,
+                    f: calc.sisaF,
+                    createdAt: new Date()
+                });
+                alert('Data transaksi berhasil tersimpan di Cloud Firestore!');
+            } catch (err) {
+                console.error(err);
+                alert('Gagal menyimpan data ke Cloud.');
+            }
+        };
+
+        // Real-time Cloud Data Listener
+        function listenToCloudData() {
+            try {
+                const q = query(collection(db, "transactions"), orderBy("createdAt", "desc"));
+                onSnapshot(q, (snapshot) => {
+                    cloudTransactions = [];
+                    snapshot.forEach((doc) => {
+                        cloudTransactions.push(doc.data());
+                    });
+                    renderHistory(cloudTransactions);
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // Render Table
+        function renderHistory(data) {
+            const tbody = document.getElementById('history-tbody');
+            tbody.innerHTML = '';
+            data.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="py-2.5 px-2 font-medium">${t.tanggal}</td>
+                    <td class="py-2.5 px-2 text-slate-500">${t.userEmail ? t.userEmail.split('@')[0] : 'staf'}</td>
+                    <td class="py-2.5 px-2 font-bold">${t.gramasi} g</td>
+                    <td class="py-2.5 px-2 font-semibold">Rp ${Math.round(t.gross).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2">Rp ${Math.round(t.a).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2">Rp ${Math.round(t.b).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2">Rp ${Math.round(t.c).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2">Rp ${Math.round(t.d).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2 text-emerald-600 font-semibold">Rp ${Math.round(t.e).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2 text-amber-600">Rp ${Math.round(t.ops).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2 text-brand-600 font-bold">Rp ${Math.round(t.f).toLocaleString('id-ID')}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+
     <script>
-        // State Management
-        let transactions = JSON.parse(localStorage.getItem('komisi_transactions') || '[]');
+        // Ops Items UI Logic & Calculations
         let opsItems = [
             { id: 1, nama: 'BBM & Transport', nominal: 50000 },
             { id: 2, nama: 'Konsumsi Lapangan', nominal: 30000 }
         ];
-        let scriptUrl = localStorage.getItem('komisi_script_url') || '';
 
-        let barChartInstance = null;
-        let pieChartInstance = null;
-
-        // Init App
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('input-tanggal').valueAsDate = new Date();
-            document.getElementById('input-script-url').value = scriptUrl;
             renderOpsRows();
-            calculate();
-            renderHistoryTable();
         });
 
-        // Theme Toggle
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-        }
-
-        // Tab Switching
-        function switchTab(tab) {
-            const tabInput = document.getElementById('tab-input');
-            const tabDash = document.getElementById('tab-dashboard');
-            const btnInput = document.getElementById('btn-tab-input');
-            const btnDash = document.getElementById('btn-tab-dashboard');
-
-            if (tab === 'input') {
-                tabInput.classList.remove('hidden');
-                tabDash.classList.add('hidden');
-                btnInput.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition";
-                btnDash.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition";
-            } else {
-                tabInput.classList.add('hidden');
-                tabDash.classList.remove('hidden');
-                btnDash.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition";
-                btnInput.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition";
-                renderDashboard();
-            }
-        }
-
-        // Config Modal
-        function openConfigModal() {
-            document.getElementById('config-modal').classList.remove('hidden');
-        }
-        function closeConfigModal() {
-            document.getElementById('config-modal').classList.add('hidden');
-        }
-        function saveScriptUrl() {
-            scriptUrl = document.getElementById('input-script-url').value.trim();
-            localStorage.setItem('komisi_script_url', scriptUrl);
-            closeConfigModal();
-            alert('URL Google Apps Script berhasil disimpan!');
-        }
-
-        // Ops Itemized Rows
         function renderOpsRows() {
             const container = document.getElementById('ops-container');
             container.innerHTML = '';
@@ -449,9 +400,8 @@
                 const div = document.createElement('div');
                 div.className = "flex items-center gap-2";
                 div.innerHTML = `
-                    <input type="text" value="${item.nama}" oninput="updateOpsItem(${index}, 'nama', this.value)" placeholder="Nama Item" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs focus:ring-1 focus:ring-amber-500 outline-none">
-                    <input type="number" value="${item.nominal}" oninput="updateOpsItem(${index}, 'nominal', this.value)" placeholder="Rp" class="w-28 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold focus:ring-1 focus:ring-amber-500 outline-none">
-                    <button onclick="removeOpsRow(${index})" class="p-1.5 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark"></i></button>
+                    <input type="text" value="${item.nama}" oninput="updateOpsItem(${index}, 'nama', this.value)" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs">
+                    <input type="number" value="${item.nominal}" oninput="updateOpsItem(${index}, 'nominal', this.value)" class="w-28 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold">
                 `;
                 container.appendChild(div);
             });
@@ -459,12 +409,7 @@
         }
 
         function addOpsRow() {
-            opsItems.push({ id: Date.now(), nama: 'Operasional Lain', nominal: 0 });
-            renderOpsRows();
-        }
-
-        function removeOpsRow(index) {
-            opsItems.splice(index, 1);
+            opsItems.push({ id: Date.now(), nama: 'Ops Lain', nominal: 0 });
             renderOpsRows();
         }
 
@@ -473,12 +418,6 @@
             calculate();
         }
 
-        // Formatter Helper
-        function formatRp(num) {
-            return 'Rp ' + Math.round(num).toLocaleString('id-ID');
-        }
-
-        // Live Calculation Engine
         function calculate() {
             const gramasi = parseFloat(document.getElementById('input-gramasi').value) || 0;
             const h1 = parseFloat(document.getElementById('input-harga1').value) || 0;
@@ -494,299 +433,43 @@
             const e = grossH2 * 0.30;
 
             const totalOps = opsItems.reduce((acc, curr) => acc + (parseFloat(curr.nominal) || 0), 0);
-            const totalKomisiAE = a + b + c + d + e;
-            const sisaF = gross - (totalKomisiAE + totalOps);
+            const totalAE = a + b + c + d + e;
+            const sisaF = gross - (totalAE + totalOps);
 
-            // Update Cards
-            document.getElementById('card-gross').innerText = formatRp(gross);
-            document.getElementById('card-komisi-ae').innerText = formatRp(totalKomisiAE);
-            document.getElementById('card-ops').innerText = formatRp(totalOps);
-            document.getElementById('card-sisa-f').innerText = formatRp(sisaF);
-            document.getElementById('text-total-ops').innerText = formatRp(totalOps);
+            document.getElementById('card-gross').innerText = 'Rp ' + Math.round(gross).toLocaleString('id-ID');
+            document.getElementById('card-komisi-ae').innerText = 'Rp ' + Math.round(totalAE).toLocaleString('id-ID');
+            document.getElementById('card-ops').innerText = 'Rp ' + Math.round(totalOps).toLocaleString('id-ID');
+            document.getElementById('card-sisa-f').innerText = 'Rp ' + Math.round(sisaF).toLocaleString('id-ID');
+            document.getElementById('text-total-ops').innerText = 'Rp ' + Math.round(totalOps).toLocaleString('id-ID');
 
-            // Update Table Preview
-            document.getElementById('base-a').innerText = formatRp(gross);
-            document.getElementById('val-a').innerText = formatRp(a);
+            document.getElementById('base-a').innerText = 'Rp ' + Math.round(gross).toLocaleString('id-ID');
+            document.getElementById('val-a').innerText = 'Rp ' + Math.round(a).toLocaleString('id-ID');
 
-            document.getElementById('base-b').innerText = formatRp(gross);
-            document.getElementById('val-b').innerText = formatRp(b);
+            document.getElementById('base-b').innerText = 'Rp ' + Math.round(gross).toLocaleString('id-ID');
+            document.getElementById('val-b').innerText = 'Rp ' + Math.round(b).toLocaleString('id-ID');
 
-            document.getElementById('base-c').innerText = formatRp(gross);
-            document.getElementById('val-c').innerText = formatRp(c);
+            document.getElementById('base-c').innerText = 'Rp ' + Math.round(gross).toLocaleString('id-ID');
+            document.getElementById('val-c').innerText = 'Rp ' + Math.round(c).toLocaleString('id-ID');
 
-            document.getElementById('base-d').innerText = formatRp(gross);
-            document.getElementById('val-d').innerText = formatRp(d);
+            document.getElementById('base-d').innerText = 'Rp ' + Math.round(gross).toLocaleString('id-ID');
+            document.getElementById('val-d').innerText = 'Rp ' + Math.round(d).toLocaleString('id-ID');
 
-            document.getElementById('base-e').innerText = formatRp(grossH2);
-            document.getElementById('val-e').innerText = formatRp(e);
+            document.getElementById('base-e').innerText = 'Rp ' + Math.round(grossH2).toLocaleString('id-ID');
+            document.getElementById('val-e').innerText = 'Rp ' + Math.round(e).toLocaleString('id-ID');
 
-            document.getElementById('val-f').innerText = formatRp(sisaF);
+            document.getElementById('val-f').innerText = 'Rp ' + Math.round(sisaF).toLocaleString('id-ID');
 
             return { gramasi, h1, h2, gross, a, b, c, d, e, totalOps, sisaF };
         }
 
-        // Save Transaction
-        async function saveTransaction() {
-            const calc = calculate();
-            const tanggal = document.getElementById('input-tanggal').value;
-
-            if (!tanggal) {
-                alert('Silakan pilih tanggal transaksi.');
-                return;
-            }
-
-            const tx = {
-                id: 'TX-' + Date.now(),
-                tanggal: tanggal,
-                timestamp: new Date().toLocaleString('id-ID'),
-                gramasi: calc.gramasi,
-                h1: calc.h1,
-                h2: calc.h2,
-                gross: calc.gross,
-                a: calc.a,
-                b: calc.b,
-                c: calc.c,
-                d: calc.d,
-                e: calc.e,
-                ops: calc.totalOps,
-                operasionalItems: [...opsItems],
-                f: calc.sisaF
-            };
-
-            // Save Local
-            transactions.unshift(tx);
-            localStorage.setItem('komisi_transactions', JSON.stringify(transactions));
-            renderHistoryTable();
-
-            // Sync to Google Sheets
-            if (scriptUrl) {
-                try {
-                    // Gunakan URLSearchParams / Form Data agar lolos CORS Google tanpa terblokir
-                    await fetch(scriptUrl, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify(tx)
-                    });
-                    alert('Transaksi berhasil disimpan secara lokal dan dikirim ke Google Sheets!');
-                } catch (err) {
-                    console.error(err);
-                    alert('Transaksi tersimpan lokal, namun gagal mengirim ke Google Sheets.');
-                }
+        function switchTab(tab) {
+            if(tab === 'input') {
+                document.getElementById('tab-input').classList.remove('hidden');
+                document.getElementById('tab-dashboard').classList.add('hidden');
             } else {
-                alert('Transaksi berhasil disimpan di browser!');
+                document.getElementById('tab-input').classList.add('hidden');
+                document.getElementById('tab-dashboard').classList.remove('hidden');
             }
-        }
-
-        // Delete Transaction
-        function deleteTx(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus transaksi ini?')) {
-                transactions = transactions.filter(t => t.id !== id);
-                localStorage.setItem('komisi_transactions', JSON.stringify(transactions));
-                renderHistoryTable();
-            }
-        }
-
-        // Render History Table
-        function renderHistoryTable() {
-            const tbody = document.getElementById('history-tbody');
-            const tfoot = document.getElementById('history-tfoot');
-            const filterDate = document.getElementById('filter-date').value;
-
-            let filtered = transactions;
-            if (filterDate) {
-                filtered = transactions.filter(t => t.tanggal === filterDate);
-            }
-
-            tbody.innerHTML = '';
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12" class="py-6 text-center text-slate-400">Belum ada transaksi tersimpan</td></tr>`;
-                tfoot.innerHTML = '';
-                return;
-            }
-
-            let sumGram = 0, sumGross = 0, sumA = 0, sumB = 0, sumC = 0, sumD = 0, sumE = 0, sumOps = 0, sumF = 0;
-
-            filtered.forEach(t => {
-                sumGram += t.gramasi;
-                sumGross += t.gross;
-                sumA += t.a;
-                sumB += t.b;
-                sumC += t.c;
-                sumD += t.d;
-                sumE += t.e;
-                sumOps += t.ops;
-                sumF += t.f;
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition";
-                tr.innerHTML = `
-                    <td class="py-2.5 px-2 font-medium">${t.tanggal}</td>
-                    <td class="py-2.5 px-2 font-bold">${t.gramasi} g</td>
-                    <td class="py-2.5 px-2 text-slate-500">${(t.h1/1000).toFixed(0)}k / ${(t.h2/1000).toFixed(0)}k</td>
-                    <td class="py-2.5 px-2 font-semibold">${formatRp(t.gross)}</td>
-                    <td class="py-2.5 px-2">${formatRp(t.a)}</td>
-                    <td class="py-2.5 px-2">${formatRp(t.b)}</td>
-                    <td class="py-2.5 px-2">${formatRp(t.c)}</td>
-                    <td class="py-2.5 px-2">${formatRp(t.d)}</td>
-                    <td class="py-2.5 px-2 text-emerald-600 dark:text-emerald-400 font-semibold">${formatRp(t.e)}</td>
-                    <td class="py-2.5 px-2 text-amber-600 dark:text-amber-400">${formatRp(t.ops)}</td>
-                    <td class="py-2.5 px-2 text-brand-600 dark:text-brand-400 font-bold">${formatRp(t.f)}</td>
-                    <td class="py-2.5 px-2 text-center no-print">
-                        <button onclick="deleteTx('${t.id}')" class="text-slate-400 hover:text-red-500 p-1"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            tfoot.innerHTML = `
-                <tr>
-                    <td class="py-3 px-2">TOTAL</td>
-                    <td class="py-3 px-2">${sumGram.toFixed(2)} g</td>
-                    <td class="py-3 px-2">-</td>
-                    <td class="py-3 px-2">${formatRp(sumGross)}</td>
-                    <td class="py-3 px-2">${formatRp(sumA)}</td>
-                    <td class="py-3 px-2">${formatRp(sumB)}</td>
-                    <td class="py-3 px-2">${formatRp(sumC)}</td>
-                    <td class="py-3 px-2">${formatRp(sumD)}</td>
-                    <td class="py-3 px-2 text-emerald-600 dark:text-emerald-400">${formatRp(sumE)}</td>
-                    <td class="py-3 px-2 text-amber-600 dark:text-amber-400">${formatRp(sumOps)}</td>
-                    <td class="py-3 px-2 text-brand-600 dark:text-brand-400">${formatRp(sumF)}</td>
-                    <td class="py-3 px-2 no-print"></td>
-                </tr>
-            `;
-        }
-
-        function resetFilter() {
-            document.getElementById('filter-date').value = '';
-            renderHistoryTable();
-        }
-
-        // Export to CSV
-        function exportCSV() {
-            if (transactions.length === 0) {
-                alert('Tidak ada data transaksi untuk diekspor.');
-                return;
-            }
-
-            let csv = 'ID,Tanggal,Gramasi,Harga1,Harga2,Gross,KomisiA,KomisiB,KomisiC,KomisiD,KomisiE,Operasional,SisaF\n';
-            transactions.forEach(t => {
-                csv += `"${t.id}","${t.tanggal}",${t.gramasi},${t.h1},${t.h2},${t.gross},${t.a},${t.b},${t.c},${t.d},${t.e},${t.ops},${t.f}\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute('download', `rekapan_komisi_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Dashboard Rendering Logic
-        function renderDashboard() {
-            const period = document.getElementById('dash-period').value;
-            const now = new Date();
-            let filtered = transactions;
-
-            if (period === 'this-week') {
-                const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 1)).toISOString().slice(0,10);
-                filtered = transactions.filter(t => t.tanggal >= startOfWeek);
-            } else if (period === 'last-7') {
-                const last7 = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0,10);
-                filtered = transactions.filter(t => t.tanggal >= last7);
-            } else if (period === 'this-month') {
-                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
-                filtered = transactions.filter(t => t.tanggal >= startOfMonth);
-            }
-
-            let totalGram = 0, totalGross = 0, totalOps = 0, totalF = 0;
-            let sumA = 0, sumB = 0, sumC = 0, sumD = 0, sumE = 0;
-
-            filtered.forEach(t => {
-                totalGram += t.gramasi;
-                totalGross += t.gross;
-                totalOps += t.ops;
-                totalF += t.f;
-                sumA += t.a;
-                sumB += t.b;
-                sumC += t.c;
-                sumD += t.d;
-                sumE += t.e;
-            });
-
-            document.getElementById('dash-kpi-gram').innerText = totalGram.toFixed(2) + ' Gram';
-            document.getElementById('dash-kpi-gross').innerText = formatRp(totalGross);
-            document.getElementById('dash-kpi-ops').innerText = formatRp(totalOps);
-            document.getElementById('dash-kpi-f').innerText = formatRp(totalF);
-
-            // Hak Komisi Table
-            const tbody = document.getElementById('dash-hak-tbody');
-            tbody.innerHTML = `
-                <tr><td class="py-2">Pihak A</td><td>10% (Harga 1)</td><td class="text-right font-bold">${formatRp(sumA)}</td></tr>
-                <tr><td class="py-2">Pihak B</td><td>5% (Harga 1)</td><td class="text-right font-bold">${formatRp(sumB)}</td></tr>
-                <tr><td class="py-2">Pihak C</td><td>5% (Harga 1)</td><td class="text-right font-bold">${formatRp(sumC)}</td></tr>
-                <tr><td class="py-2">Pihak D</td><td>10% (Harga 1)</td><td class="text-right font-bold">${formatRp(sumD)}</td></tr>
-                <tr class="text-emerald-600 dark:text-emerald-400"><td class="py-2 font-bold">Pihak E</td><td>30% (Harga 2)</td><td class="text-right font-bold">${formatRp(sumE)}</td></tr>
-                <tr class="text-brand-600 dark:text-brand-400"><td class="py-2 font-bold">Pihak F (Sisa/Net)</td><td>Sisa Hasil Bersih</td><td class="text-right font-bold">${formatRp(totalF)}</td></tr>
-            `;
-
-            renderCharts(filtered, sumA, sumB, sumC, sumD, sumE, totalOps, totalF);
-        }
-
-        // Render Charts via Chart.js
-        function renderCharts(data, a, b, c, d, e, ops, f) {
-            // Bar Chart
-            const ctxBar = document.getElementById('chart-bar-trend').getContext('2d');
-            if (barChartInstance) barChartInstance.destroy();
-
-            const grouped = {};
-            data.forEach(t => {
-                if (!grouped[t.tanggal]) grouped[t.tanggal] = { gross: 0, f: 0 };
-                grouped[t.tanggal].gross += t.gross;
-                grouped[t.tanggal].f += t.f;
-            });
-
-            const labels = Object.keys(grouped).sort();
-            const dataGross = labels.map(l => grouped[l].gross);
-            const dataF = labels.map(l => grouped[l].f);
-
-            barChartInstance = new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'Gross', data: dataGross, backgroundColor: '#3b82f6' },
-                        { label: 'Sisa F (Net)', data: dataF, backgroundColor: '#10b981' }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
-                }
-            });
-
-            // Pie Chart
-            const ctxPie = document.getElementById('chart-pie-dist').getContext('2d');
-            if (pieChartInstance) pieChartInstance.destroy();
-
-            pieChartInstance = new Chart(ctxPie, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Komisi A', 'Komisi B', 'Komisi C', 'Komisi D', 'Komisi E', 'Operasional', 'Sisa F'],
-                    datasets: [{
-                        data: [a, b, c, d, e, ops, f],
-                        backgroundColor: ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#3b82f6']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
-                }
-            });
         }
     </script>
 </body>
