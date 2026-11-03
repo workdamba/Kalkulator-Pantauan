@@ -283,23 +283,23 @@
             }
         });
 
-        // Login Handler (Mendukung input username biasa)
+        // Login Handler (Otomatis mendeteksi input username vs email)
         window.handleLogin = async (e) => {
             e.preventDefault();
             const userInput = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value;
             const errDiv = document.getElementById('login-error');
 
-            let emailFormatted = userInput;
-            if (!userInput.includes('@')) {
-                emailFormatted = `${userInput.toLowerCase()}@kalkulator.local`;
-            }
+            // Jika mengandung '@', gunakan langsung. Jika tidak, tambahkan domain dummy.
+            let emailFormatted = userInput.includes('@') 
+                ? userInput 
+                : `${userInput.toLowerCase()}@kalkulator.lokal`;
 
             try {
                 errDiv.classList.add('hidden');
                 await signInWithEmailAndPassword(auth, emailFormatted, pass);
             } catch (err) {
-                console.error(err);
+                console.error("Firebase Auth Error:", err.code, err.message);
                 errDiv.innerText = "Login gagal: Username atau Password salah.";
                 errDiv.classList.remove('hidden');
             }
