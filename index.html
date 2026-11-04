@@ -126,7 +126,12 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 no-print">
                     <div class="lg:col-span-5 space-y-6">
                         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-                            <h2 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-sliders text-brand-600"></i> 1. Input Parameter Harian</h2>
+                            <div class="flex items-center justify-between">
+                                <h2 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-sliders text-brand-600"></i> 1. Input Parameter Harian</h2>
+                                <button onclick="resetInputs()" class="px-2.5 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-600 dark:text-slate-300 font-bold rounded-lg transition flex items-center gap-1">
+                                    <i class="fa-solid fa-rotate-right"></i> Reset ke 0
+                                </button>
+                            </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Tanggal Transaksi</label>
                                 <input type="date" id="input-tanggal" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
@@ -147,7 +152,7 @@
                             </div>
                         </div>
 
-                        <!-- Itemized Ops -->
+                        <!-- Itemized Ops dengan Tambah & Hapus Dinamis -->
                         <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
                             <div class="flex items-center justify-between">
                                 <h2 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-list-check text-amber-500"></i> 2. Item Operasional Harian</h2>
@@ -285,8 +290,12 @@
                     </div>
                 </div>
 
-                <!-- Ringkasan KPI Card Utama -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Ringkasan KPI Card Utama (Termasuk Card Gramasi) -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
+                        <span class="text-xs text-blue-600 dark:text-blue-400 font-semibold uppercase">Total Gramasi</span>
+                        <div id="dash-gramasi" class="text-xl font-bold text-slate-900 dark:text-white mt-1">0 g</div>
+                    </div>
                     <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
                         <span class="text-xs text-slate-500 font-semibold uppercase">Total Gross Periode</span>
                         <div id="dash-gross" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Rp 0</div>
@@ -299,7 +308,7 @@
                         <span class="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Total Operasional</span>
                         <div id="dash-ops" class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md card-dashboard">
+                    <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md card-dashboard col-span-2 md:col-span-1">
                         <span class="text-xs text-brand-100 font-semibold uppercase">Total Sisa Bersih (F)</span>
                         <div id="dash-sisa-f" class="text-xl font-bold mt-1">Rp 0</div>
                     </div>
@@ -422,7 +431,7 @@
         import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // CONFIG FIREBASE MILIK ANDA
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V5O4wz_k",
   authDomain: "kalkulator-komisi.firebaseapp.com",
   projectId: "kalkulator-komisi",
@@ -631,10 +640,11 @@
             }
 
             // Hitung Akumulasi Total KPI
-            let totalGross = 0, totalAE = 0, totalOps = 0, totalF = 0;
+            let totalGramasi = 0, totalGross = 0, totalAE = 0, totalOps = 0, totalF = 0;
             let sumA = 0, sumB = 0, sumC = 0, sumD = 0, sumE = 0;
 
             filteredData.forEach(d => {
+                totalGramasi += parseFloat(d.gramasi) || 0;
                 totalGross += d.gross || 0;
                 const ae = (d.a || 0) + (d.b || 0) + (d.c || 0) + (d.d || 0) + (d.e || 0);
                 totalAE += ae;
@@ -649,6 +659,7 @@
             });
 
             // Set Kartu Utama
+            document.getElementById('dash-gramasi').innerText = totalGramasi.toLocaleString('id-ID') + ' g';
             document.getElementById('dash-gross').innerText = 'Rp ' + Math.round(totalGross).toLocaleString('id-ID');
             document.getElementById('dash-komisi-ae').innerText = 'Rp ' + Math.round(totalAE).toLocaleString('id-ID');
             document.getElementById('dash-ops').innerText = 'Rp ' + Math.round(totalOps).toLocaleString('id-ID');
@@ -739,10 +750,11 @@
             document.body.removeChild(link);
         };
 
-        // Ops Items UI Logic & Calculations
+        // Ops Items UI Logic & Calculations (Dinamis Tambah & Hapus)
         let opsItems = [
             { id: 1, nama: 'BBM & Transport', nominal: 50000 },
-            { id: 2, nama: 'Konsumsi Lapangan', nominal: 30000 }
+            { id: 2, nama: 'Konsumsi Lapangan', nominal: 30000 },
+            { id: 3, nama: 'Ops Lain', nominal: 0 }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -757,8 +769,11 @@
                 const div = document.createElement('div');
                 div.className = "flex items-center gap-2";
                 div.innerHTML = `
-                    <input type="text" value="${item.nama}" oninput="updateOpsItem(${index}, 'nama', this.value)" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs">
-                    <input type="number" value="${item.nominal}" oninput="updateOpsItem(${index}, 'nominal', this.value)" class="w-28 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold">
+                    <input type="text" value="${item.nama}" oninput="updateOpsItem(${index}, 'nama', this.value)" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs" placeholder="Nama Item">
+                    <input type="number" value="${item.nominal}" oninput="updateOpsItem(${index}, 'nominal', this.value)" class="w-28 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold" placeholder="Nominal">
+                    <button onclick="removeOpsRow(${index})" class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition" title="Hapus Item">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
                 `;
                 container.appendChild(div);
             });
@@ -766,12 +781,26 @@
         }
 
         function addOpsRow() {
-            opsItems.push({ id: Date.now(), nama: 'Ops Lain', nominal: 0 });
+            opsItems.push({ id: Date.now(), nama: 'Item Baru', nominal: 0 });
+            renderOpsRows();
+        }
+
+        function removeOpsRow(index) {
+            opsItems.splice(index, 1);
             renderOpsRows();
         }
 
         function updateOpsItem(index, key, val) {
             opsItems[index][key] = key === 'nominal' ? parseFloat(val) || 0 : val;
+            calculate();
+        }
+
+        function resetInputs() {
+            document.getElementById('input-gramasi').value = 0;
+            document.getElementById('input-harga1').value = 0;
+            document.getElementById('input-harga2').value = 0;
+            opsItems.forEach(item => item.nominal = 0);
+            renderOpsRows();
             calculate();
         }
 
