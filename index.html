@@ -17,7 +17,7 @@
                 extend: {
                     colors: {
                         brand: {
-                            50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                            50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
                         }
                     }
                 }
@@ -29,38 +29,38 @@
             .no-print { display: none !important; }
             .print-only { display: block !important; }
             body { background: white !important; color: black !important; }
-            .card-dashboard { border: 1px solid #cbd5e1 !important; shadow: none !important; }
+            .card-dashboard { border: 1px solid #cbd5e1 !important; box-shadow: none !important; }
         }
         .print-only { display: none; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen">
+<body class="bg-slate-100 text-slate-800 min-h-screen">
 
     <!-- SCREEN 1: LOGIN SECTION -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-md w-full shadow-xl space-y-6 border border-slate-200 dark:border-slate-700">
+        <div class="bg-white rounded-xl p-8 max-w-sm w-full shadow-md space-y-6 border border-slate-200">
             <div class="text-center space-y-2">
-                <div class="inline-flex p-3 bg-brand-600 text-white rounded-2xl shadow-md mb-2">
-                    <i class="fa-solid fa-lock text-2xl"></i>
+                <div class="inline-flex p-3 bg-slate-100 text-slate-700 rounded-xl mb-1">
+                    <i class="fa-solid fa-calculator text-2xl"></i>
                 </div>
-                <h2 class="text-xl font-bold">Login Sistem Komisi</h2>
-                <p class="text-xs text-slate-500">Masukkan Username dan Password Anda</p>
+                <h2 class="text-lg font-bold text-slate-800">Sistem Kalkulator Komisi</h2>
+                <p class="text-xs text-slate-500">Silakan login untuk mengakses sistem</p>
             </div>
 
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Username / Email</label>
-                    <input type="text" id="login-email" required placeholder="Contoh: admin1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Username / Email</label>
+                    <input type="text" id="login-email" required placeholder="Contoh: admin1" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-400 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Password / Kode PIN</label>
-                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-400 outline-none">
                 </div>
                 
                 <div id="login-error" class="text-xs text-red-500 text-center font-bold hidden"></div>
 
-                <button type="submit" id="btn-login" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+                <button type="submit" id="btn-login" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk
                 </button>
             </form>
         </div>
@@ -69,29 +69,29 @@
     <!-- SCREEN 2: MAIN APP SECTION -->
     <div id="app-screen" class="hidden">
         <!-- Header -->
-        <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 no-print">
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 no-print">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="p-2 bg-brand-600 text-white rounded-xl shadow-md">
-                        <i class="fa-solid fa-calculator text-xl"></i>
+                    <div class="p-2 bg-slate-800 text-white rounded-lg">
+                        <i class="fa-solid fa-calculator"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-lg leading-tight">Kalkulator & Dashboard Komisi</h1>
-                        <p id="user-display" class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Terhubung ke Cloud Database</p>
+                        <h1 class="font-bold text-base text-slate-800 leading-tight">Kalkulator & Dashboard Komisi</h1>
+                        <p id="user-display" class="text-xs text-slate-500 font-medium">Terhubung ke Cloud Database</p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <div class="bg-slate-100 dark:bg-slate-700 p-1 rounded-xl flex text-xs font-semibold">
-                        <button id="btn-tab-input" onclick="switchTab('input')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition">
+                    <div class="bg-slate-100 p-1 rounded-lg flex text-xs font-semibold">
+                        <button id="btn-tab-input" onclick="switchTab('input')" class="px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition">
                             Input & Rekapan
                         </button>
-                        <button id="btn-tab-dashboard" onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition">
+                        <button id="btn-tab-dashboard" onclick="switchTab('dashboard')" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition">
                             Dashboard Analisis
                         </button>
                     </div>
 
-                    <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                    <button onclick="handleLogout()" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition flex items-center gap-1">
                         <i class="fa-solid fa-sign-out-alt"></i> Logout
                     </button>
                 </div>
@@ -104,62 +104,62 @@
             <div id="tab-input" class="space-y-6">
                 <!-- Top Summary Cards -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                         <span class="text-xs text-slate-500 font-semibold uppercase">Gross (Harga 1)</span>
-                        <div id="card-gross" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Rp 0</div>
+                        <div id="card-gross" class="text-lg font-bold text-slate-800 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <span class="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Total Komisi A-E</span>
-                        <div id="card-komisi-ae" class="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">Rp 0</div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-xs text-purple-600 font-semibold uppercase">Total Komisi A-E</span>
+                        <div id="card-komisi-ae" class="text-lg font-bold text-purple-600 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <span class="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Total Operasional</span>
-                        <div id="card-ops" class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <span class="text-xs text-amber-600 font-semibold uppercase">Total Operasional</span>
+                        <div id="card-ops" class="text-lg font-bold text-amber-600 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md">
-                        <span class="text-xs text-brand-100 font-semibold uppercase">Sisa Bersih (F)</span>
-                        <div id="card-sisa-f" class="text-xl font-bold mt-1">Rp 0</div>
+                    <div class="bg-slate-800 text-white p-4 rounded-xl shadow-sm">
+                        <span class="text-xs text-slate-300 font-semibold uppercase">Sisa Bersih (F)</span>
+                        <div id="card-sisa-f" class="text-lg font-bold mt-1">Rp 0</div>
                     </div>
                 </div>
 
                 <!-- Input Form -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 no-print">
                     <div class="lg:col-span-5 space-y-6">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                             <div class="flex items-center justify-between">
-                                <h2 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-sliders text-brand-600"></i> 1. Input Parameter Harian</h2>
-                                <button onclick="resetInputs()" class="px-2.5 py-1 text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-600 dark:text-slate-300 font-bold rounded-lg transition flex items-center gap-1">
+                                <h2 class="font-bold text-sm text-slate-800 flex items-center gap-2"><i class="fa-solid fa-sliders text-slate-600"></i> 1. Input Parameter Harian</h2>
+                                <button onclick="resetInputs()" class="px-2 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded transition flex items-center gap-1">
                                     <i class="fa-solid fa-rotate-right"></i> Reset ke 0
                                 </button>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Tanggal Transaksi</label>
-                                <input type="date" id="input-tanggal" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Tanggal Transaksi</label>
+                                <input type="date" id="input-tanggal" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold outline-none">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Gramasi Pendapatan (Gram)</label>
-                                <input type="number" step="0.01" id="input-gramasi" value="1" oninput="calculate()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Gramasi Pendapatan (Gram)</label>
+                                <input type="number" step="0.01" id="input-gramasi" value="1" oninput="calculate()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold outline-none">
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Harga 1 (Gross)</label>
-                                    <input type="number" id="input-harga1" value="2000000" oninput="calculate()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
+                                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Harga 1 (Gross)</label>
+                                    <input type="number" id="input-harga1" value="2000000" oninput="calculate()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase mb-1">Harga 2 (Komisi E)</label>
-                                    <input type="number" id="input-harga2" value="2000000" oninput="calculate()" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-semibold outline-none">
+                                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Harga 2 (Komisi E)</label>
+                                    <input type="number" id="input-harga2" value="2000000" oninput="calculate()" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold outline-none">
                                 </div>
                             </div>
                         </div>
 
                         <!-- Itemized Ops dengan Tambah & Hapus Dinamis -->
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                             <div class="flex items-center justify-between">
-                                <h2 class="font-bold text-base flex items-center gap-2"><i class="fa-solid fa-list-check text-amber-500"></i> 2. Item Operasional Harian</h2>
-                                <button onclick="addOpsRow()" class="px-2.5 py-1 text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-bold rounded-lg">+ Tambah Item</button>
+                                <h2 class="font-bold text-sm text-slate-800 flex items-center gap-2"><i class="fa-solid fa-list-check text-amber-500"></i> 2. Item Operasional Harian</h2>
+                                <button onclick="addOpsRow()" class="px-2.5 py-1 text-xs bg-amber-100 text-amber-800 font-bold rounded hover:bg-amber-200 transition">+ Tambah Item</button>
                             </div>
                             <div id="ops-container" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
-                            <div class="pt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center text-sm font-bold">
+                            <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-sm font-bold">
                                 <span>Total Pengeluaran:</span>
                                 <span id="text-total-ops" class="text-amber-600">Rp 0</span>
                             </div>
@@ -168,13 +168,13 @@
 
                     <!-- Live Breakdown Preview & Save -->
                     <div class="lg:col-span-7 space-y-6">
-                        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <h2 class="font-bold text-base">Live Preview Pembagian Komisi</h2>
+                                    <h2 class="font-bold text-sm text-slate-800">Live Preview Pembagian Komisi</h2>
                                     <p class="text-xs text-slate-500">Perhitungan otomatis berbasis parameter</p>
                                 </div>
-                                <button onclick="saveTransactionToFirebase()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2">
+                                <button onclick="saveTransactionToFirebase()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-2 transition">
                                     <i class="fa-solid fa-cloud-arrow-up"></i> Simpan Ke Cloud
                                 </button>
                             </div>
@@ -182,20 +182,20 @@
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-xs">
                                     <thead>
-                                        <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
+                                        <tr class="border-b border-slate-200 text-slate-400 uppercase">
                                             <th class="py-2.5">Pihak</th>
                                             <th class="py-2.5">Skema</th>
                                             <th class="py-2.5">Basis</th>
                                             <th class="py-2.5 text-right">Nominal Komisi</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50 font-medium">
+                                    <tbody class="divide-y divide-slate-100 font-medium">
                                         <tr><td class="py-2 font-bold">Pihak A</td><td>10% (H1)</td><td id="base-a">Rp 0</td><td id="val-a" class="text-right font-bold">Rp 0</td></tr>
                                         <tr><td class="py-2 font-bold">Pihak B</td><td>5% (H1)</td><td id="base-b">Rp 0</td><td id="val-b" class="text-right font-bold">Rp 0</td></tr>
                                         <tr><td class="py-2 font-bold">Pihak C</td><td>5% (H1)</td><td id="base-c">Rp 0</td><td id="val-c" class="text-right font-bold">Rp 0</td></tr>
                                         <tr><td class="py-2 font-bold">Pihak D</td><td>10% (H1)</td><td id="base-d">Rp 0</td><td id="val-d" class="text-right font-bold">Rp 0</td></tr>
-                                        <tr class="bg-emerald-50/50 dark:bg-emerald-950/20"><td class="py-2 font-bold text-emerald-600">Pihak E</td><td class="text-emerald-600">30% (H2)</td><td id="base-e" class="text-emerald-600">Rp 0</td><td id="val-e" class="text-right font-bold text-emerald-600">Rp 0</td></tr>
-                                        <tr class="bg-brand-50/50 dark:bg-brand-950/20 font-bold"><td class="py-2.5 text-brand-600">Pihak F (Net)</td><td class="text-brand-600">Gross - (A..E + Ops)</td><td>-</td><td id="val-f" class="text-right text-sm text-brand-600">Rp 0</td></tr>
+                                        <tr class="bg-emerald-50"><td class="py-2 font-bold text-emerald-700">Pihak E</td><td class="text-emerald-700">30% (H2)</td><td id="base-e" class="text-emerald-700">Rp 0</td><td id="val-e" class="text-right font-bold text-emerald-700">Rp 0</td></tr>
+                                        <tr class="bg-slate-100 font-bold"><td class="py-2.5 text-slate-800">Pihak F (Net)</td><td class="text-slate-600">Gross - (A..E + Ops)</td><td>-</td><td id="val-f" class="text-right text-sm text-slate-800">Rp 0</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -204,10 +204,10 @@
                 </div>
 
                 <!-- Transaction Log Table -->
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 no-print">
                         <div>
-                            <h2 class="font-bold text-base">Rekapan Cloud Real-time</h2>
+                            <h2 class="font-bold text-sm text-slate-800">Rekapan Cloud Real-time</h2>
                             <p class="text-xs text-slate-500">Tersimpan otomatis di Firestore Cloud Database</p>
                         </div>
                         <div class="flex items-center gap-2">
@@ -223,7 +223,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead>
-                                <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
+                                <tr class="border-b border-slate-200 text-slate-400 uppercase">
                                     <th class="py-3 px-2">Waktu</th>
                                     <th class="py-3 px-2">Input By</th>
                                     <th class="py-3 px-2">Gramasi</th>
@@ -233,12 +233,12 @@
                                     <th class="py-3 px-2">C</th>
                                     <th class="py-3 px-2">D</th>
                                     <th class="py-3 px-2">E</th>
-                                    <th class="py-3 px-2">Ops</th>
+                                    <th class="py-3 px-2">Ops (Detail Item)</th>
                                     <th class="py-3 px-2">Sisa F</th>
                                     <th class="py-3 px-2 text-center no-print">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="history-tbody" class="divide-y divide-slate-100 dark:divide-slate-700/50"></tbody>
+                            <tbody id="history-tbody" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </div>
@@ -255,83 +255,83 @@
                 </div>
 
                 <!-- Filter Rentang Tanggal Sesuai Kebutuhan -->
-                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4 no-print">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 no-print">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
-                            <h2 class="font-bold text-base flex items-center gap-2">
-                                <i class="fa-solid fa-calendar-days text-brand-600"></i> Filter Rentang Tanggal
+                            <h2 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-slate-700"></i> Filter Rentang Tanggal
                             </h2>
                             <p class="text-xs text-slate-500">Pilih periode awal dan akhir untuk menyaring analisis transaksi</p>
                         </div>
-                        <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2">
+                        <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-2">
                             <i class="fa-solid fa-file-pdf text-red-400"></i> Cetak Resume PDF Pimpinan
                         </button>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-3 pt-2">
                         <div class="flex items-center gap-2">
-                            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">Dari:</label>
-                            <input type="date" id="filter-start-date" onchange="applyCustomDateFilter()" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold outline-none">
+                            <label class="text-xs font-bold text-slate-600 uppercase">Dari:</label>
+                            <input type="date" id="filter-start-date" onchange="applyCustomDateFilter()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-semibold outline-none">
                         </div>
                         <div class="flex items-center gap-2">
-                            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">s.d.</label>
-                            <input type="date" id="filter-end-date" onchange="applyCustomDateFilter()" class="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold outline-none">
+                            <label class="text-xs font-bold text-slate-600 uppercase">s.d.</label>
+                            <input type="date" id="filter-end-date" onchange="applyCustomDateFilter()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-semibold outline-none">
                         </div>
 
-                        <div class="h-4 w-px bg-slate-300 dark:bg-slate-700 hidden sm:block"></div>
+                        <div class="h-4 w-px bg-slate-300 hidden sm:block"></div>
 
                         <!-- Shortcut Cepat -->
                         <div class="flex items-center gap-1 text-xs font-semibold">
-                            <button onclick="setShortcutRange('today')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition">Hari Ini</button>
-                            <button onclick="setShortcutRange('7days')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition">7 Hari Terakhir</button>
-                            <button onclick="setShortcutRange('30days')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition">30 Hari Terakhir</button>
-                            <button onclick="setShortcutRange('all')" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 transition">Semua Data</button>
+                            <button onclick="setShortcutRange('today')" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 transition">Hari Ini</button>
+                            <button onclick="setShortcutRange('7days')" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 transition">7 Hari Terakhir</button>
+                            <button onclick="setShortcutRange('30days')" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 transition">30 Hari Terakhir</button>
+                            <button onclick="setShortcutRange('all')" class="px-2.5 py-1 rounded-md bg-slate-100 hover:bg-slate-200 transition">Semua Data</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Ringkasan KPI Card Utama (Termasuk Card Gramasi) -->
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
-                        <span class="text-xs text-blue-600 dark:text-blue-400 font-semibold uppercase">Total Gramasi</span>
-                        <div id="dash-gramasi" class="text-xl font-bold text-slate-900 dark:text-white mt-1">0 g</div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm card-dashboard">
+                        <span class="text-xs text-blue-600 font-semibold uppercase">Total Gramasi</span>
+                        <div id="dash-gramasi" class="text-lg font-bold text-slate-800 mt-1">0 g</div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm card-dashboard">
                         <span class="text-xs text-slate-500 font-semibold uppercase">Total Gross Periode</span>
-                        <div id="dash-gross" class="text-xl font-bold text-slate-900 dark:text-white mt-1">Rp 0</div>
+                        <div id="dash-gross" class="text-lg font-bold text-slate-800 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
-                        <span class="text-xs text-purple-600 dark:text-purple-400 font-semibold uppercase">Total Komisi A-E</span>
-                        <div id="dash-komisi-ae" class="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">Rp 0</div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm card-dashboard">
+                        <span class="text-xs text-purple-600 font-semibold uppercase">Total Komisi A-E</span>
+                        <div id="dash-komisi-ae" class="text-lg font-bold text-purple-600 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm card-dashboard">
-                        <span class="text-xs text-amber-600 dark:text-amber-400 font-semibold uppercase">Total Operasional</span>
-                        <div id="dash-ops" class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp 0</div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm card-dashboard">
+                        <span class="text-xs text-amber-600 font-semibold uppercase">Total Operasional</span>
+                        <div id="dash-ops" class="text-lg font-bold text-amber-600 mt-1">Rp 0</div>
                     </div>
-                    <div class="bg-brand-600 text-white p-4 rounded-2xl shadow-md card-dashboard col-span-2 md:col-span-1">
-                        <span class="text-xs text-brand-100 font-semibold uppercase">Total Sisa Bersih (F)</span>
-                        <div id="dash-sisa-f" class="text-xl font-bold mt-1">Rp 0</div>
+                    <div class="bg-slate-800 text-white p-4 rounded-xl shadow-sm card-dashboard col-span-2 md:col-span-1">
+                        <span class="text-xs text-slate-300 font-semibold uppercase">Total Sisa Bersih (F)</span>
+                        <div id="dash-sisa-f" class="text-lg font-bold mt-1">Rp 0</div>
                     </div>
                 </div>
 
                 <!-- Breakdown Rincian Masing-Masing Pihak A-E & Grafik Donut -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <!-- Tabel Rincian Angka Masing-Masing Pihak -->
-                    <div class="lg:col-span-7 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4 card-dashboard">
-                        <h3 class="font-bold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-users text-brand-600"></i> Rincian Nominal Pembagian Per Pihak
+                    <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 card-dashboard">
+                        <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-slate-700"></i> Rincian Nominal Pembagian Per Pihak
                         </h3>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-xs">
                                 <thead>
-                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-slate-400 uppercase">
+                                    <tr class="border-b border-slate-200 text-slate-400 uppercase">
                                         <th class="py-2.5">Penerima Komisi / Hak</th>
                                         <th class="py-2.5">Ket. Skema</th>
                                         <th class="py-2.5 text-right">Total Akumulasi Nominal</th>
                                         <th class="py-2.5 text-right">Persentase (%)</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50 font-medium">
+                                <tbody class="divide-y divide-slate-100 font-medium">
                                     <tr>
                                         <td class="py-2.5 font-bold flex items-center gap-2">
                                             <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> Pihak A
@@ -364,29 +364,29 @@
                                         <td id="dash-val-d" class="text-right font-bold">Rp 0</td>
                                         <td id="dash-pct-d" class="text-right text-slate-500">0%</td>
                                     </tr>
-                                    <tr class="bg-emerald-50/50 dark:bg-emerald-950/20">
-                                        <td class="py-2.5 font-bold text-emerald-600 flex items-center gap-2">
+                                    <tr class="bg-emerald-50">
+                                        <td class="py-2.5 font-bold text-emerald-700 flex items-center gap-2">
                                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Pihak E
                                         </td>
-                                        <td class="text-emerald-600">30% (H2)</td>
-                                        <td id="dash-val-e" class="text-right font-bold text-emerald-600">Rp 0</td>
-                                        <td id="dash-pct-e" class="text-right text-emerald-600">0%</td>
+                                        <td class="text-emerald-700">30% (H2)</td>
+                                        <td id="dash-val-e" class="text-right font-bold text-emerald-700">Rp 0</td>
+                                        <td id="dash-pct-e" class="text-right text-emerald-700">0%</td>
                                     </tr>
-                                    <tr class="bg-amber-50/50 dark:bg-amber-950/20">
-                                        <td class="py-2.5 font-bold text-amber-600 flex items-center gap-2">
+                                    <tr class="bg-amber-50">
+                                        <td class="py-2.5 font-bold text-amber-700 flex items-center gap-2">
                                             <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Pengeluaran Operasional
                                         </td>
-                                        <td class="text-amber-600">Real Cost Ops</td>
-                                        <td id="dash-val-ops" class="text-right font-bold text-amber-600">Rp 0</td>
-                                        <td id="dash-pct-ops" class="text-right text-amber-600">0%</td>
+                                        <td class="text-amber-700">Real Cost Ops</td>
+                                        <td id="dash-val-ops" class="text-right font-bold text-amber-700">Rp 0</td>
+                                        <td id="dash-pct-ops" class="text-right text-amber-700">0%</td>
                                     </tr>
-                                    <tr class="bg-brand-50 dark:bg-brand-950/30 font-bold border-t border-brand-200">
-                                        <td class="py-3 text-brand-600 flex items-center gap-2">
-                                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600 inline-block"></span> Pihak F (Sisa Bersih)
+                                    <tr class="bg-slate-100 font-bold border-t border-slate-200">
+                                        <td class="py-3 text-slate-800 flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block"></span> Pihak F (Sisa Bersih)
                                         </td>
-                                        <td class="text-brand-600">Gross - (A..E + Ops)</td>
-                                        <td id="dash-val-f" class="text-right text-sm text-brand-600">Rp 0</td>
-                                        <td id="dash-pct-f" class="text-right text-brand-600">0%</td>
+                                        <td class="text-slate-600">Gross - (A..E + Ops)</td>
+                                        <td id="dash-val-f" class="text-right text-sm text-slate-800">Rp 0</td>
+                                        <td id="dash-pct-f" class="text-right text-slate-800">0%</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -394,9 +394,9 @@
                     </div>
 
                     <!-- Doughnut Chart Visualisasi Distribusi -->
-                    <div class="lg:col-span-5 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-4 card-dashboard flex flex-col justify-between">
-                        <h3 class="font-bold text-base flex items-center gap-2">
-                            <i class="fa-solid fa-chart-pie text-brand-600"></i> Visual Distribusi (%)
+                    <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4 card-dashboard flex flex-col justify-between">
+                        <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-slate-700"></i> Visual Distribusi (%)
                         </h3>
                         <div class="h-64 relative w-full flex items-center justify-center my-auto">
                             <canvas id="chart-doughnut-breakdown"></canvas>
@@ -432,15 +432,14 @@
 
         // CONFIG FIREBASE MILIK ANDA
         const firebaseConfig = {
-  apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V5O4wz_k",
-  authDomain: "kalkulator-komisi.firebaseapp.com",
-  projectId: "kalkulator-komisi",
-  storageBucket: "kalkulator-komisi.firebasestorage.app",
-  messagingSenderId: "92709729622",
-  appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
-};
+            apiKey: "AIzaSyC0p5krzufwfIEhhSdSYEAidf1V504wz_k",
+            authDomain: "kalkulator-komisi.firebaseapp.com",
+            projectId: "kalkulator-komisi",
+            storageBucket: "kalkulator-komisi.firebasestorage.app",
+            messagingSenderId: "92709729622",
+            appId: "1:92709729622:web:5664ccdcef6fb565f612f7"
+        };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -448,7 +447,6 @@
         let currentUser = null;
         let doughnutChartInstance = null;
 
-        // Auth Listener
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -463,7 +461,6 @@
             }
         });
 
-        // Login Handler
         window.handleLogin = async (e) => {
             e.preventDefault();
             const userInput = document.getElementById('login-email').value.trim();
@@ -484,12 +481,11 @@
             }
         };
 
-        // Logout Handler
         window.handleLogout = () => {
             signOut(auth);
         };
 
-        // Save to Firestore Cloud
+        // Save to Firestore Cloud (Menyimpan Detail opsItems)
         window.saveTransactionToFirebase = async () => {
             const calc = calculate();
             const tanggal = document.getElementById('input-tanggal').value;
@@ -510,17 +506,17 @@
                     gross: calc.gross,
                     a: calc.a, b: calc.b, c: calc.c, d: calc.d, e: calc.e,
                     ops: calc.totalOps,
+                    opsItems: opsItems.map(item => ({ nama: item.nama, nominal: parseFloat(item.nominal) || 0 })), // <-- Menyimpan detail item operasional
                     f: calc.sisaF,
                     createdAt: new Date()
                 });
-                alert('Data transaksi berhasil tersimpan di Cloud Firestore!');
+                alert('Data transaksi & rincian operasional berhasil tersimpan di Cloud Firestore!');
             } catch (err) {
                 console.error(err);
                 alert('Gagal menyimpan data ke Cloud.');
             }
         };
 
-        // Delete from Firestore Cloud
         window.deleteTransaction = async (docId) => {
             if (confirm("Apakah Anda yakin ingin menghapus data transaksi ini dari Cloud?")) {
                 try {
@@ -533,7 +529,6 @@
             }
         };
 
-        // Real-time Cloud Data Listener
         function listenToCloudData() {
             try {
                 const q = query(collection(db, "transactions"), orderBy("createdAt", "desc"));
@@ -551,11 +546,18 @@
             }
         }
 
-        // Render Table
+        // Render Table dengan Detail Item Operasional
         function renderHistory(data) {
             const tbody = document.getElementById('history-tbody');
             tbody.innerHTML = '';
             data.forEach(t => {
+                // Format string rincian operasional untuk ditampilkan di tabel
+                let opsDetailStr = `Rp ${Math.round(t.ops || 0).toLocaleString('id-ID')}`;
+                if (t.opsItems && t.opsItems.length > 0) {
+                    const details = t.opsItems.map(i => `${i.nama}: Rp ${Math.round(i.nominal).toLocaleString('id-ID')}`).join(', ');
+                    opsDetailStr = `<span title="${details}">${opsDetailStr} <i class="fa-solid fa-circle-info text-slate-400 cursor-pointer"></i></span>`;
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="py-2.5 px-2 font-medium">${t.tanggal}</td>
@@ -567,8 +569,8 @@
                     <td class="py-2.5 px-2">Rp ${Math.round(t.c).toLocaleString('id-ID')}</td>
                     <td class="py-2.5 px-2">Rp ${Math.round(t.d).toLocaleString('id-ID')}</td>
                     <td class="py-2.5 px-2 text-emerald-600 font-semibold">Rp ${Math.round(t.e).toLocaleString('id-ID')}</td>
-                    <td class="py-2.5 px-2 text-amber-600">Rp ${Math.round(t.ops).toLocaleString('id-ID')}</td>
-                    <td class="py-2.5 px-2 text-brand-600 font-bold">Rp ${Math.round(t.f).toLocaleString('id-ID')}</td>
+                    <td class="py-2.5 px-2 text-amber-600 font-medium">${opsDetailStr}</td>
+                    <td class="py-2.5 px-2 text-slate-800 font-bold">Rp ${Math.round(t.f).toLocaleString('id-ID')}</td>
                     <td class="py-2.5 px-2 text-center no-print">
                         <button onclick="deleteTransaction('${t.id}')" class="px-2 py-1 text-xs bg-red-100 hover:bg-red-200 text-red-600 font-bold rounded-lg transition" title="Hapus">
                             <i class="fa-solid fa-trash"></i>
@@ -579,7 +581,6 @@
             });
         }
 
-        // Custom Date Range Filtering Logic
         window.applyCustomDateFilter = function() {
             renderDashboardCharts();
         };
@@ -613,7 +614,6 @@
             const startVal = document.getElementById('filter-start-date').value;
             const endVal = document.getElementById('filter-end-date').value;
             
-            // Filter Data berdasarkan tanggal kustom
             const filteredData = allData.filter(d => {
                 if (!d.tanggal) return false;
                 if (startVal && d.tanggal < startVal) return false;
@@ -621,7 +621,6 @@
                 return true;
             });
 
-            // Update Teks Subtitle Cetak PDF
             const subtitleEl = document.getElementById('print-subtitle');
             const dateEl = document.getElementById('print-date');
             if (subtitleEl) {
@@ -639,7 +638,6 @@
                 dateEl.innerText = `Dicetak pada: ${new Date().toLocaleString('id-ID')}`;
             }
 
-            // Hitung Akumulasi Total KPI
             let totalGramasi = 0, totalGross = 0, totalAE = 0, totalOps = 0, totalF = 0;
             let sumA = 0, sumB = 0, sumC = 0, sumD = 0, sumE = 0;
 
@@ -658,14 +656,12 @@
                 sumE += d.e || 0;
             });
 
-            // Set Kartu Utama
             document.getElementById('dash-gramasi').innerText = totalGramasi.toLocaleString('id-ID') + ' g';
             document.getElementById('dash-gross').innerText = 'Rp ' + Math.round(totalGross).toLocaleString('id-ID');
             document.getElementById('dash-komisi-ae').innerText = 'Rp ' + Math.round(totalAE).toLocaleString('id-ID');
             document.getElementById('dash-ops').innerText = 'Rp ' + Math.round(totalOps).toLocaleString('id-ID');
             document.getElementById('dash-sisa-f').innerText = 'Rp ' + Math.round(totalF).toLocaleString('id-ID');
 
-            // Set Rincian Nominal Masing-Masing Pihak
             document.getElementById('dash-val-a').innerText = 'Rp ' + Math.round(sumA).toLocaleString('id-ID');
             document.getElementById('dash-val-b').innerText = 'Rp ' + Math.round(sumB).toLocaleString('id-ID');
             document.getElementById('dash-val-c').innerText = 'Rp ' + Math.round(sumC).toLocaleString('id-ID');
@@ -674,7 +670,6 @@
             document.getElementById('dash-val-ops').innerText = 'Rp ' + Math.round(totalOps).toLocaleString('id-ID');
             document.getElementById('dash-val-f').innerText = 'Rp ' + Math.round(totalF).toLocaleString('id-ID');
 
-            // Hitung Persentase Terhadap Gross
             const getPct = (val) => totalGross > 0 ? ((val / totalGross) * 100).toFixed(1) + '%' : '0%';
             document.getElementById('dash-pct-a').innerText = getPct(sumA);
             document.getElementById('dash-pct-b').innerText = getPct(sumB);
@@ -684,7 +679,6 @@
             document.getElementById('dash-pct-ops').innerText = getPct(totalOps);
             document.getElementById('dash-pct-f').innerText = getPct(totalF);
 
-            // Render Doughnut Chart Pembagian Pihak & Ops
             const ctxDoughnut = document.getElementById('chart-doughnut-breakdown');
             if (ctxDoughnut) {
                 if (doughnutChartInstance) doughnutChartInstance.destroy();
@@ -694,7 +688,7 @@
                         labels: ['Pihak A', 'Pihak B', 'Pihak C', 'Pihak D', 'Pihak E', 'Operasional', 'Pihak F (Sisa)'],
                         datasets: [{
                             data: [sumA, sumB, sumC, sumD, sumE, totalOps, totalF],
-                            backgroundColor: ['#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#2563eb']
+                            backgroundColor: ['#6366f1', '#a855f7', '#ec4899', '#f43f5e', '#10b981', '#f59e0b', '#334155']
                         }]
                     },
                     options: { 
@@ -710,7 +704,6 @@
     </script>
 
     <script>
-        // Export CSV / Excel Handler
         window.exportToCSV = function() {
             const data = window.cloudTransactions;
             if (!data || data.length === 0) {
@@ -719,9 +712,10 @@
             }
 
             let csvContent = "\uFEFF";
-            csvContent += "Tanggal,Waktu Input,Input By,Gramasi (g),Harga 1 (Gross),Harga 2,Komisi A,Komisi B,Komisi C,Komisi D,Komisi E,Total Ops,Sisa Bersih (F)\n";
+            csvContent += "Tanggal,Waktu Input,Input By,Gramasi (g),Harga 1 (Gross),Harga 2,Komisi A,Komisi B,Komisi C,Komisi D,Komisi E,Total Ops,Rincian Ops,Sisa Bersih (F)\n";
 
             data.forEach(t => {
+                let opsSummary = t.opsItems ? t.opsItems.map(i => `${i.nama}: ${i.nominal}`).join(' | ') : '';
                 let row = [
                     `"${t.tanggal || ''}"`,
                     `"${t.timestamp || ''}"`,
@@ -735,6 +729,7 @@
                     `"${Math.round(t.d || 0)}"`,
                     `"${Math.round(t.e || 0)}"`,
                     `"${Math.round(t.ops || 0)}"`,
+                    `"${opsSummary}"`,
                     `"${Math.round(t.f || 0)}"`
                 ].join(",");
                 csvContent += row + "\n";
@@ -750,11 +745,9 @@
             document.body.removeChild(link);
         };
 
-        // Ops Items UI Logic & Calculations (Dinamis Tambah & Hapus)
         let opsItems = [
             { id: 1, nama: 'BBM & Transport', nominal: 50000 },
-            { id: 2, nama: 'Konsumsi Lapangan', nominal: 30000 },
-            { id: 3, nama: 'Ops Lain', nominal: 0 }
+            { id: 2, nama: 'Konsumsi Lapangan', nominal: 30000 }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -769,9 +762,9 @@
                 const div = document.createElement('div');
                 div.className = "flex items-center gap-2";
                 div.innerHTML = `
-                    <input type="text" value="${item.nama}" oninput="updateOpsItem(${index}, 'nama', this.value)" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs" placeholder="Nama Item">
-                    <input type="number" value="${item.nominal}" oninput="updateOpsItem(${index}, 'nominal', this.value)" class="w-28 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-1.5 text-xs font-semibold" placeholder="Nominal">
-                    <button onclick="removeOpsRow(${index})" class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition" title="Hapus Item">
+                    <input type="text" value="${item.nama}" oninput="updateOpsItem(${index}, 'nama', this.value)" class="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs" placeholder="Nama Keperluan">
+                    <input type="number" value="${item.nominal}" oninput="updateOpsItem(${index}, 'nominal', this.value)" class="w-28 bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-semibold" placeholder="Nominal">
+                    <button onclick="removeOpsRow(${index})" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition" title="Hapus Item">
                         <i class="fa-solid fa-trash text-xs"></i>
                     </button>
                 `;
@@ -781,7 +774,7 @@
         }
 
         function addOpsRow() {
-            opsItems.push({ id: Date.now(), nama: 'Item Baru', nominal: 0 });
+            opsItems.push({ id: Date.now(), nama: 'Keperluan Baru', nominal: 0 });
             renderOpsRows();
         }
 
@@ -855,13 +848,13 @@
             if(tab === 'input') {
                 document.getElementById('tab-input').classList.remove('hidden');
                 document.getElementById('tab-dashboard').classList.add('hidden');
-                btnInput.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition";
-                btnDashboard.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition";
+                btnInput.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
+                btnDashboard.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition";
             } else {
                 document.getElementById('tab-input').classList.add('hidden');
                 document.getElementById('tab-dashboard').classList.remove('hidden');
-                btnDashboard.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-sm transition";
-                btnInput.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-brand-600 transition";
+                btnDashboard.className = "px-3 py-1.5 rounded-md bg-white text-slate-800 shadow-sm transition";
+                btnInput.className = "px-3 py-1.5 rounded-md text-slate-600 hover:text-slate-900 transition";
                 
                 if (window.renderDashboardCharts) {
                     window.renderDashboardCharts();
